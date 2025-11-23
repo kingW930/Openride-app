@@ -49,7 +49,7 @@ export default function FeaturesScreen() {
   ];
 
   return (
-    <LinearGradient colors={GRADIENTS.primary} style={styles.container}>
+    <LinearGradient colors={GRADIENTS.primary as any} style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView 
           style={styles.scrollView}
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
   },
   title: {
-    fontSize: FONT_SIZE['3xl'],
+    fontSize: FONT_SIZE.xxxl,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.white,
     marginBottom: SPACING.sm,
@@ -135,7 +135,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: SPACING.lg,
     alignItems: 'center',
-    backdropFilter: 'blur(10px)',
   },
   iconContainer: {
     marginBottom: SPACING.md,
