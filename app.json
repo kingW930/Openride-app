@@ -1,30 +1,78 @@
 {
   "expo": {
-    "name": "openride-app",
+    "name": "OpenRide",
     "slug": "openride-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "scheme": "openride",
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#007AFF"
     },
+    "updates": {
+      "enabled": false,
+      "url": "https://u.expo.dev/00000000-0000-0000-0000-000000000000"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.openride.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "OpenRide needs access to your location to show nearby drivers and track your trip.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "OpenRide drivers need background location access to share their position with riders during trips.",
+        "NSCameraUsageDescription": "OpenRide needs camera access to scan QR codes for ticket verification.",
+        "UIBackgroundModes": [
+          "location",
+          "remote-notification"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#007AFF"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.openride.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "CAMERA"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": ""
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-location",
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#007AFF"
+        }
+      ],
+      "expo-barcode-scanner"
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      }
     }
   }
 }
