@@ -42,7 +42,7 @@ export default function RoleSelectionScreen() {
   };
 
   return (
-    <LinearGradient colors={GRADIENTS.primary} style={styles.container}>
+    <LinearGradient colors={GRADIENTS.primary as any} style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.content}>
           {/* Header */}
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: FONT_SIZE['3xl'],
+    fontSize: FONT_SIZE.xxxl,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.white,
     marginBottom: SPACING.sm,

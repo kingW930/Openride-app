@@ -1,64 +1,81 @@
+// app/onboarding/welcome.tsx
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/ui/Button';
-import { COLORS, GRADIENTS, FONT_SIZE, FONT_WEIGHT, SPACING } from '@/constants';
+import { COLORS, FONT_SIZE, FONT_WEIGHT, SPACING } from '@/constants';
+import { Ionicons } from '@expo/vector-icons';
+
+const { width } = Dimensions.get('window');
 
 export default function WelcomeScreen() {
   const router = useRouter();
 
+  // Optional: automatically navigate after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => router.push('/onboarding/features'), 5000);
+    return () => clearTimeout(timer);
+  }, [router]);
+
   return (
-    <LinearGradient colors={GRADIENTS.primary} style={styles.container}>
+    <LinearGradient colors={[COLORS.primary, COLORS.primaryDark]} style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <Animated.View 
-          entering={FadeIn.duration(800)} 
-          style={styles.content}
-        >
+        <Animated.View entering={FadeIn.duration(800)} style={styles.content}>
           {/* Logo Section */}
           <View style={styles.logoSection}>
-            <Animated.Text 
+            <Animated.View
               entering={FadeInDown.delay(200).duration(600)}
-              style={styles.logo}
+              style={[styles.logo, { width: width * 0.25, height: width * 0.25, borderRadius: (width * 0.25) / 2, alignItems: 'center', justifyContent: 'center' }]}
+              accessibilityRole="image"
+              accessible
             >
-              🚗
-            </Animated.Text>
-            <Animated.Text 
+              {/* professional icon */}
+              <Ionicons name="car-outline" size={Math.round(width * 0.12)} color={COLORS.white} />
+            </Animated.View>
+
+            <Animated.Text
               entering={FadeInDown.delay(400).duration(600)}
-              style={styles.appName}
+              style={[styles.appName, { fontSize: width * 0.1 }]}
+              accessibilityRole="header"
             >
               OpenRide
             </Animated.Text>
-            <Animated.Text 
+
+            <Animated.Text
               entering={FadeInDown.delay(600).duration(600)}
-              style={styles.tagline}
+              style={[styles.tagline, { fontSize: width * 0.045 }]}
             >
               Affordable rides for everyone
             </Animated.Text>
           </View>
 
           {/* Brand Statement */}
-          <Animated.View 
-            entering={FadeInDown.delay(800).duration(600)}
-            style={styles.statementSection}
-          >
+          <Animated.View entering={FadeInDown.delay(800).duration(600)} style={styles.statementSection}>
             <Text style={styles.statement}>
               Your journey begins here. Connect with verified drivers and reach your destination safely.
             </Text>
           </Animated.View>
 
-          {/* CTA Button */}
-          <Animated.View 
-            entering={FadeInDown.delay(1000).duration(600)}
-            style={styles.buttonContainer}
-          >
-            <Button
-              title="Get Started"
+          {/* CTA Button with Pressable animation */}
+          <Animated.View entering={FadeInDown.delay(1000).duration(600)} style={styles.buttonContainer}>
+            <Pressable
               onPress={() => router.push('/onboarding/features')}
-              variant="secondary"
-            />
+              style={({ pressed }) => [{ opacity: pressed ? 0.78 : 1 }]}
+              accessibilityRole="button"
+              accessible
+              accessibilityLabel="Get Started"
+            >
+              <Button
+                title="Get Started"
+                variant="secondary"
+                onPress={() => router.push('/onboarding/features')}
+                fullWidth
+                size="lg"
+              />
+            </Pressable>
           </Animated.View>
         </Animated.View>
       </SafeAreaView>
@@ -85,20 +102,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    fontSize: 120,
     marginBottom: SPACING.md,
+    backgroundColor: COLORS.primary, // circular badge behind icon
+    shadowColor: COLORS.shadow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
   },
   appName: {
-    fontSize: FONT_SIZE['4xl'],
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.white,
     marginBottom: SPACING.xs,
   },
   tagline: {
-    fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.medium,
     color: COLORS.white,
-    opacity: 0.9,
+    opacity: 0.95,
+    textAlign: 'center',
   },
   statementSection: {
     alignItems: 'center',
@@ -114,5 +135,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: '100%',
+    marginBottom: SPACING.lg,
   },
 });

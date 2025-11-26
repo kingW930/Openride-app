@@ -2,7 +2,7 @@
 // app/rider/trip.tsx - Active Trip
 // ========================================
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { router } from 'expo-router';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT, RADIUS, SHADOW } from '@/constants';
@@ -32,7 +32,6 @@ export default function TripScreen() {
     <View style={styles.container}>
       {/* Map */}
       <MapView
-        provider={PROVIDER_GOOGLE}
         style={styles.map}
         initialRegion={{
           latitude: 9.0765,
@@ -40,7 +39,8 @@ export default function TripScreen() {
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }}
-        customMapStyle={darkMapStyle}
+        loadingEnabled={true}
+        loadingIndicatorColor={COLORS.primary}
       />
 
       {/* Status Card */}

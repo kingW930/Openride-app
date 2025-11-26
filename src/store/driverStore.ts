@@ -1,32 +1,30 @@
 import { create } from 'zustand';
-import { Booking } from '../types/api';
 
 interface DriverState {
+  online: boolean;
   isOnline: boolean;
-  pendingRequests: Booking[];
-  activeBookings: Booking[];
-  setOnlineStatus: (status: boolean) => void;
-  addPendingRequest: (request: Booking) => void;
-  removePendingRequest: (requestId: string) => void;
-  setActiveBookings: (bookings: Booking[]) => void;
+  currentRequest: any;
+  activeTrip: any;
+  pendingRequests: any[];
+  driverId: string | null;
+  setOnline: (v: boolean) => void;
+  setOnlineStatus: (v: boolean) => void;
+  setIncomingRequest: (req: any) => void;
+  acceptRequest: () => void;
+  completeTrip: () => void;
 }
 
 export const useDriverStore = create<DriverState>((set) => ({
+  online: false,
   isOnline: false,
+  currentRequest: null,
+  activeTrip: null,
   pendingRequests: [],
-  activeBookings: [],
+  driverId: null,
 
-  setOnlineStatus: (status) => set({ isOnline: status }),
-  
-  addPendingRequest: (request) =>
-    set((state) => ({
-      pendingRequests: [...state.pendingRequests, request],
-    })),
-  
-  removePendingRequest: (requestId) =>
-    set((state) => ({
-      pendingRequests: state.pendingRequests.filter((r) => r.id !== requestId),
-    })),
-  
-  setActiveBookings: (bookings) => set({ activeBookings: bookings }),
+  setOnline: (v: boolean) => set({ online: v, isOnline: v }),
+  setOnlineStatus: (v: boolean) => set({ online: v, isOnline: v }),
+  setIncomingRequest: (req: any) => set({ currentRequest: req }),
+  acceptRequest: () => set((s) => ({ activeTrip: s.currentRequest, currentRequest: null })),
+  completeTrip: () => set({ activeTrip: null }),
 }));

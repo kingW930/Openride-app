@@ -23,7 +23,10 @@ export default function TestLoginScreen() {
       name: name || 'Test User',
       email: email || 'test@openride.com',
       phone: '',
-      role: undefined, // Will be set in role selection
+      role: 'rider',
+      kycStatus: 'PENDING',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     });
 
     // Navigate to role selection
@@ -31,7 +34,7 @@ export default function TestLoginScreen() {
   };
 
   return (
-    <LinearGradient colors={GRADIENTS.primary} style={styles.container}>
+    <LinearGradient colors={GRADIENTS.primary as any} style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -130,7 +133,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   title: {
-    fontSize: FONT_SIZE['3xl'],
+    fontSize: FONT_SIZE.xxxl,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.white,
     marginBottom: SPACING.xs,

@@ -79,7 +79,7 @@ export default function CarouselScreen() {
   };
 
   return (
-    <LinearGradient colors={GRADIENTS.primary} style={styles.container}>
+    <LinearGradient colors={GRADIENTS.primary as any} style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         {/* Skip Button */}
         <View style={styles.header}>
@@ -87,7 +87,7 @@ export default function CarouselScreen() {
             title="Skip"
             onPress={handleSkip}
             variant="ghost"
-            size="small"
+            size="sm"
           />
         </View>
 

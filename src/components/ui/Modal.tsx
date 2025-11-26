@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     height: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: RADIUS.round,
+    borderRadius: RADIUS.full,
     backgroundColor: COLORS.surfaceElevated, // Dark background
   },
   closeButtonText: {

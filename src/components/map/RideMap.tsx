@@ -1,143 +1,113 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE, Region } from 'react-native-maps';
-import { colors, sizes } from '../../constants';
-
-interface Location {
-  latitude: number;
-  longitude: number;
-}
-
-interface Stop {
-  id: string;
-  name: string;
-  lat: number;
-  lon: number;
-}
+// src/components/map/RideMap.tsx
+import React, { useEffect, useRef, useState } from 'react';
+import { View, ActivityIndicator } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import Icon from 'react-native-vector-icons/Feather';
+import { socketService } from '@/services/socket';
+import { COLORS } from '@/constants';
 
 interface RideMapProps {
-  userLocation: Location | null;
-  driverLocation?: Location | null;
-  stops?: Stop[];
-  polyline?: Location[];
-  onRegionChange?: (region: Region) => void;
-  showRecenterButton?: boolean;
+  userLocation?: { latitude: number; longitude: number } | null;
+  showDrivers?: boolean;
+  style?: any;
+  zoom?: number;
 }
 
-export const RideMap: React.FC<RideMapProps> = ({
-  userLocation,
-  driverLocation,
-  stops = [],
-  polyline = [],
-  onRegionChange,
-  showRecenterButton = true,
-}) => {
-  const mapRef = useRef<MapView>(null);
-  const [hasManuallyPanned, setHasManuallyPanned] = useState(false);
+type DriverMarker = {
+  id: string;
+  lat: number;
+  lon: number;
+  heading?: number;
+  meta?: any;
+};
+
+export const RideMap: React.FC<RideMapProps> = ({ userLocation, showDrivers = true, style, zoom = 0.012 }) => {
+  const mapRef = useRef<MapView | null>(null);
+  const [drivers, setDrivers] = useState<Record<string, DriverMarker>>({});
+  const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    if (!hasManuallyPanned && userLocation) {
-      recenterMap();
-    }
-  }, [userLocation, driverLocation]);
+    let mounted = true;
+    (async () => {
+      await socketService.connect();
+      if (!mounted) return;
+      setConnected(socketService.isConnected());
 
-  const recenterMap = () => {
-    if (!mapRef.current) return;
+      // Listen for driver locations
+      const onDriverLocation = (payload: any) => {
+        // payload: { id, latitude, longitude, heading?, meta? }
+        setDrivers(prev => ({
+          ...prev,
+          [payload.id]: { id: payload.id, lat: payload.latitude, lon: payload.longitude, heading: payload.heading, meta: payload.meta },
+        }));
+      };
 
-    const coordinates: Location[] = [];
-    if (userLocation) coordinates.push(userLocation);
-    if (driverLocation) coordinates.push(driverLocation);
-    stops.forEach(stop => coordinates.push({ latitude: stop.lat, longitude: stop.lon }));
+      socketService.on('driver:location', onDriverLocation);
 
-    if (coordinates.length > 0) {
-      mapRef.current.fitToCoordinates(coordinates, {
-        edgePadding: { top: 100, right: 50, bottom: 100, left: 50 },
-        animated: true,
+      // Also listen for driver disconnect (optional)
+      socketService.on('driver:offline', (payload: any) => {
+        setDrivers(prev => {
+          const copy = { ...prev };
+          delete copy[payload.id];
+          return copy;
+        });
       });
-      setHasManuallyPanned(false);
-    }
-  };
 
-  const handleRegionChangeComplete = (region: Region) => {
-    setHasManuallyPanned(true);
-    onRegionChange?.(region);
-  };
+      // cleanup
+      return () => {
+        socketService.off('driver:location', onDriverLocation);
+        socketService.off('driver:offline');
+      };
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    // optionally center map on user location when available
+    if (userLocation && mapRef.current) {
+      mapRef.current.animateToRegion({
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+        latitudeDelta: zoom,
+        longitudeDelta: zoom,
+      });
+    }
+  }, [userLocation]);
+
+  if (!userLocation && !connected) {
+    return (
+      <View style={[{ flex: 1, justifyContent: 'center', alignItems: 'center' }, style]}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <MapView
-        ref={mapRef}
-        style={styles.map}
-        provider={PROVIDER_GOOGLE}
-        showsUserLocation
-        showsMyLocationButton={false}
-        onRegionChangeComplete={handleRegionChangeComplete}
-      >
-        {/* Driver marker */}
-        {driverLocation && (
-          <Marker
-            coordinate={driverLocation}
-            title="Driver"
-            pinColor={colors.primary}
-          />
-        )}
-
-        {/* Stop markers */}
-        {stops.map((stop) => (
-          <Marker
-            key={stop.id}
-            coordinate={{ latitude: stop.lat, longitude: stop.lon }}
-            title={stop.name}
-            pinColor={colors.secondary}
-          />
-        ))}
-
-        {/* Route polyline */}
-        {polyline.length > 1 && (
-          <Polyline
-            coordinates={polyline}
-            strokeColor={colors.primary}
-            strokeWidth={4}
-          />
-        )}
-      </MapView>
-
-      {/* Recenter button */}
-      {showRecenterButton && hasManuallyPanned && (
-        <TouchableOpacity style={styles.recenterButton} onPress={recenterMap}>
-          <Text style={styles.recenterText}>⊙</Text>
-        </TouchableOpacity>
-      )}
-    </View>
+    <MapView
+      ref={(r) => (mapRef.current = r)}
+      style={[{ flex: 1 }, style]}
+      initialRegion={
+        userLocation
+          ? { latitude: userLocation.latitude, longitude: userLocation.longitude, latitudeDelta: zoom, longitudeDelta: zoom }
+          : { latitude: 6.5244, longitude: 3.3792, latitudeDelta: zoom, longitudeDelta: zoom }
+      }
+      showsUserLocation={!!userLocation}
+      showsMyLocationButton={true}
+    >
+      {showDrivers && Object.values(drivers).map((d) => (
+        <Marker
+          key={d.id}
+          coordinate={{ latitude: d.lat, longitude: d.lon }}
+          anchor={{ x: 0.5, y: 0.5 }}
+        >
+          <Icon name="truck" size={26} color={COLORS.primary} />
+        </Marker>
+      ))}
+    </MapView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  map: {
-    width: '100%',
-    height: '100%',
-  },
-  recenterButton: {
-    position: 'absolute',
-    right: sizes.md,
-    bottom: sizes.xl,
-    backgroundColor: colors.white,
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  recenterText: {
-    fontSize: 24,
-    color: colors.primary,
-  },
-});
+export default RideMap;

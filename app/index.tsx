@@ -1,63 +1,44 @@
-import { useEffect } from 'react';
-import { useRouter } from 'expo-router';
-import { View, Text, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { FadeIn, FadeOut, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { useAuthStore } from '../src/store/authStore';
-import { GRADIENTS, FONT_SIZE, FONT_WEIGHT, COLORS } from '@/constants';
+// app/index.tsx
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { Redirect, useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { COLORS, SPACING } from '@/constants';
+import { useAuthStore } from '@/store/authStore';
 
 export default function Index() {
-  const router = useRouter();
   const { user, isLoading } = useAuthStore();
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!isLoading) {
-        if (!user) {
-          router.replace('/onboarding/welcome');
-        } else if (user.role === 'rider') {
-          router.replace('/rider/home');
-        } else if (user.role === 'driver') {
-          router.replace('/driver/home');
-        } else {
-          router.replace('/onboarding/role-selection');
-        }
-      }
-    }, 2000);
-
+    // Give the app a moment to initialize
+    const timer = setTimeout(() => setReady(true), 500);
     return () => clearTimeout(timer);
-  }, [user, isLoading]);
+  }, []);
 
-  return (
-    <LinearGradient colors={GRADIENTS.primary} style={styles.container}>
-      <Animated.View 
-        entering={FadeIn.duration(600)}
-        exiting={FadeOut.duration(400)}
-        style={styles.content}
-      >
-        <Text style={styles.logo}>🚗</Text>
-        <Text style={styles.appName}>OpenRide</Text>
-      </Animated.View>
-    </LinearGradient>
-  );
+  if (isLoading || !ready) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </SafeAreaView>
+    );
+  }
+
+  // Redirect based on auth state
+  if (user) {
+    // User is logged in, redirect to appropriate home
+    return <Redirect href="/rider/home" />;
+  }
+
+  // Not logged in, show onboarding
+  return <Redirect href="/onboarding/welcome" />;
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  container: { 
+    flex: 1, 
+    backgroundColor: COLORS.background,
     justifyContent: 'center',
-    alignItems: 'center',
-  },
-  content: {
-    alignItems: 'center',
-  },
-  logo: {
-    fontSize: 120,
-    marginBottom: 16,
-  },
-  appName: {
-    fontSize: FONT_SIZE['4xl'],
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.white,
+    alignItems: 'center'
   },
 });

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Share, TouchableOpacity } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import { colors, sizes } from '../../constants';
+import { COLORS, SPACING, FONT_SIZE, RADIUS } from '../../constants';
 import { Ticket } from '../../types/api';
 import { formatDate, formatTime } from '../../utils/formatter';
 
@@ -21,7 +21,7 @@ export const TicketDisplay: React.FC<TicketDisplayProps> = ({
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `OpenRide Ticket\nTicket ID: ${ticket.id}\nRoute: ${routeName}\nValid until: ${formatDate(ticket.validUntil)}`,
+        message: `OpenRide Ticket\nTicket ID: ${ticket.id}\nRoute: ${routeName}\nBooking: ${ticket.bookingId}`,
       });
     } catch (error) {
       console.error('Error sharing ticket:', error);
@@ -37,10 +37,10 @@ export const TicketDisplay: React.FC<TicketDisplayProps> = ({
 
       <View style={styles.qrContainer}>
         <QRCode
-          value={ticket.qrPayload}
+          value={ticket.id}
           size={200}
-          backgroundColor={colors.white}
-          color={colors.black}
+          backgroundColor={COLORS.white}
+          color={COLORS.black}
         />
       </View>
 
@@ -58,9 +58,9 @@ export const TicketDisplay: React.FC<TicketDisplayProps> = ({
           <Text style={styles.value}>{dropoffLocation}</Text>
         </View>
         <View style={styles.detailRow}>
-          <Text style={styles.label}>Valid Until:</Text>
+          <Text style={styles.label}>Booking ID:</Text>
           <Text style={styles.value}>
-            {formatDate(ticket.validUntil)} {formatTime(ticket.validUntil)}
+            {ticket.bookingId}
           </Text>
         </View>
       </View>
@@ -80,11 +80,11 @@ export const TicketDisplay: React.FC<TicketDisplayProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.white,
-    borderRadius: sizes.radiusLg,
-    padding: sizes.lg,
-    margin: sizes.md,
-    shadowColor: colors.black,
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.lg,
+    margin: SPACING.md,
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -92,66 +92,66 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: sizes.lg,
+    marginBottom: SPACING.lg,
   },
   title: {
-    fontSize: sizes.fontXl,
+    fontSize: FONT_SIZE.xl,
     fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: sizes.xs,
+    color: COLORS.text,
+    marginBottom: SPACING.xs,
   },
   routeName: {
-    fontSize: sizes.fontMd,
-    color: colors.textSecondary,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.textSecondary,
   },
   qrContainer: {
     alignItems: 'center',
-    padding: sizes.lg,
-    backgroundColor: colors.white,
-    marginBottom: sizes.lg,
+    padding: SPACING.lg,
+    backgroundColor: COLORS.white,
+    marginBottom: SPACING.lg,
   },
   details: {
-    marginBottom: sizes.lg,
+    marginBottom: SPACING.lg,
   },
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: sizes.sm,
+    paddingVertical: SPACING.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.light,
+    borderBottomColor: COLORS.border,
   },
   label: {
-    fontSize: sizes.fontSm,
-    color: colors.textSecondary,
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textSecondary,
     fontWeight: '500',
   },
   value: {
-    fontSize: sizes.fontSm,
-    color: colors.text,
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.text,
     fontWeight: '600',
     flex: 1,
     textAlign: 'right',
   },
   shareButton: {
-    backgroundColor: colors.primary,
-    borderRadius: sizes.radiusMd,
-    padding: sizes.md,
+    backgroundColor: COLORS.primary,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
     alignItems: 'center',
-    marginBottom: sizes.md,
+    marginBottom: SPACING.md,
   },
   shareButtonText: {
-    color: colors.white,
-    fontSize: sizes.fontMd,
+    color: COLORS.white,
+    fontSize: FONT_SIZE.md,
     fontWeight: '600',
   },
   footer: {
-    paddingTop: sizes.md,
+    paddingTop: SPACING.md,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: COLORS.border,
   },
   footerText: {
-    fontSize: sizes.fontSm,
-    color: colors.textSecondary,
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textSecondary,
     textAlign: 'center',
     fontStyle: 'italic',
   },

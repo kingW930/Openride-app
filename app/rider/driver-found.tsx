@@ -2,7 +2,7 @@
 // app/rider/driver-found.tsx - Driver Profile
 // ========================================
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { router } from 'expo-router';
 import { Button } from '@/components/ui/Button';
@@ -34,7 +34,6 @@ export default function DriverFoundScreen() {
     <View style={styles.container}>
       {/* Map */}
       <MapView
-        provider={PROVIDER_GOOGLE}
         style={styles.map}
         initialRegion={{
           latitude: 9.0765,
@@ -42,7 +41,8 @@ export default function DriverFoundScreen() {
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }}
-        customMapStyle={darkMapStyle}
+        loadingEnabled={true}
+        loadingIndicatorColor={COLORS.primary}
       >
         <Marker coordinate={MOCK_DRIVER.location} />
       </MapView>

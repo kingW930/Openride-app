@@ -23,14 +23,17 @@ export default function Register() {
       name: name || 'Test User',
       email: email || 'test@openride.com',
       phone: phone || '+234XXXXXXXXXX',
-      role: undefined, // Will be selected in role-selection screen
+      role: 'rider',
+      kycStatus: 'PENDING',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     });
     router.replace('/onboarding/role-selection');
   };
 
   return (
     <LinearGradient
-      colors={GRADIENTS.primary}
+      colors={GRADIENTS.primary as any}
       style={styles.gradient}
     >
       <SafeAreaView style={styles.container}>
