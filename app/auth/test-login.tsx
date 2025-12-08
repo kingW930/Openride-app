@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/store/authStore';
-import { COLORS, GRADIENTS, FONT_SIZE, FONT_WEIGHT, SPACING } from '@/constants';
+import { COLORS, FONT_SIZE, FONT_WEIGHT, SPACING } from '@/constants';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function TestLoginScreen() {
   const router = useRouter();
@@ -34,87 +34,87 @@ export default function TestLoginScreen() {
   };
 
   return (
-    <LinearGradient colors={GRADIENTS.primary as any} style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.keyboardView}
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <ScrollView
-            contentContainerStyle={styles.scrollContent}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
+          {/* Header */}
+          <Animated.View 
+            entering={FadeInDown.duration(600)}
+            style={styles.header}
           >
-            {/* Header */}
-            <Animated.View 
-              entering={FadeInDown.duration(600)}
-              style={styles.header}
-            >
-              <Text style={styles.icon}>👋</Text>
-              <Text style={styles.title}>Welcome!</Text>
-              <Text style={styles.subtitle}>
-                Let's get to know you
-              </Text>
-            </Animated.View>
+            <View style={styles.iconContainer}>
+              <Ionicons name="hand-left-outline" size={60} color={COLORS.primary} />
+            </View>
+            <Text style={styles.title}>Welcome!</Text>
+            <Text style={styles.subtitle}>
+              Let's get to know you
+            </Text>
+          </Animated.View>
 
-            {/* Form */}
-            <Animated.View 
-              entering={FadeInDown.delay(200).duration(600)}
-              style={styles.form}
-            >
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Full Name</Text>
-                <Input
-                  placeholder="Enter your name"
-                  value={name}
-                  onChangeText={setName}
-                  autoCapitalize="words"
-                />
-              </View>
-
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Email (Optional)</Text>
-                <Input
-                  placeholder="your@email.com"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-              </View>
-
-              <View style={styles.infoBox}>
-                <Text style={styles.infoIcon}>ℹ️</Text>
-                <Text style={styles.infoText}>
-                  This is a test mode. No validation required - just tap Continue!
-                </Text>
-              </View>
-            </Animated.View>
-
-            {/* Button */}
-            <Animated.View 
-              entering={FadeInDown.delay(400).duration(600)}
-              style={styles.buttonContainer}
-            >
-              <Button
-                title="Continue"
-                onPress={handleContinue}
-                variant="secondary"
+          {/* Form */}
+          <Animated.View 
+            entering={FadeInDown.delay(200).duration(600)}
+            style={styles.form}
+          >
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Full Name</Text>
+              <Input
+                placeholder="Enter your name"
+                value={name}
+                onChangeText={setName}
+                autoCapitalize="words"
+                style={styles.input}
               />
-            </Animated.View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </LinearGradient>
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Email (Optional)</Text>
+              <Input
+                placeholder="your@email.com"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                style={styles.input}
+              />
+            </View>
+
+            <View style={styles.infoBox}>
+              <Ionicons name="information-circle-outline" size={24} color={COLORS.primary} />
+              <Text style={styles.infoText}>
+                This is a test mode. No validation required - just tap Continue!
+              </Text>
+            </View>
+          </Animated.View>
+
+          {/* Button */}
+          <Animated.View 
+            entering={FadeInDown.delay(400).duration(600)}
+            style={styles.buttonContainer}
+          >
+            <Button
+              title="Continue"
+              onPress={handleContinue}
+              style={styles.button}
+            />
+          </Animated.View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  safeArea: {
-    flex: 1,
+    backgroundColor: COLORS.white,
   },
   keyboardView: {
     flex: 1,
@@ -127,22 +127,26 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: SPACING.xl,
+    marginTop: SPACING.lg,
   },
-  icon: {
-    fontSize: 80,
-    marginBottom: SPACING.md,
+  iconContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: COLORS.gray100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: SPACING.lg,
   },
   title: {
-    fontSize: FONT_SIZE.xxxl,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.white,
+    fontSize: 32,
+    fontWeight: '800',
+    color: COLORS.black,
     marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: FONT_SIZE.md,
-    fontWeight: FONT_WEIGHT.regular,
-    color: COLORS.white,
-    opacity: 0.85,
+    fontSize: FONT_SIZE.lg,
+    color: COLORS.textSecondary,
   },
   form: {
     gap: SPACING.lg,
@@ -153,28 +157,35 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: FONT_SIZE.sm,
-    fontWeight: FONT_WEIGHT.semibold,
-    color: COLORS.white,
+    fontWeight: '600',
+    color: COLORS.black,
     marginLeft: SPACING.xs,
+  },
+  input: {
+    backgroundColor: COLORS.gray100,
+    borderColor: COLORS.gray200,
   },
   infoBox: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: COLORS.gray100,
     borderRadius: 12,
     padding: SPACING.md,
     gap: SPACING.sm,
-  },
-  infoIcon: {
-    fontSize: 20,
+    alignItems: 'center',
   },
   infoText: {
     flex: 1,
     fontSize: FONT_SIZE.sm,
-    fontWeight: FONT_WEIGHT.regular,
-    color: COLORS.white,
+    color: COLORS.textSecondary,
     lineHeight: 20,
   },
   buttonContainer: {
     marginTop: 'auto',
+    marginBottom: SPACING.lg,
+  },
+  button: {
+    backgroundColor: COLORS.primary,
+    borderRadius: 16,
+    height: 56,
   },
 });

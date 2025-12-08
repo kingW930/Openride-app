@@ -82,16 +82,16 @@ export default function FeaturesScreen() {
         </ScrollView>
 
         {/* CTA Button */}
-        <Animated.View 
-          entering={FadeInDown.delay(800).duration(600)}
-          style={styles.buttonContainer}
-        >
+        <View style={styles.buttonContainer}>
           <Button
             title="Continue"
-            onPress={() => router.push('/onboarding/carousel')}
+            onPress={() => {
+              console.log('Continue pressed');
+              router.push('/onboarding/carousel');
+            }}
             variant="secondary"
           />
-        </Animated.View>
+        </View>
       </SafeAreaView>
     </LinearGradient>
   );

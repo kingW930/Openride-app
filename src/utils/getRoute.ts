@@ -1,37 +1,78 @@
 // src/utils/getRoute.ts
+// Uses OSRM (Open Source Routing Machine) for free road-based routing
 
 interface Coords {
   latitude: number;
   longitude: number;
 }
 
-export async function getRoute(start: Coords, end: Coords): Promise<{ coords: Coords[], eta: string | null }> {
-  const key = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY;
-  if (!key) throw new Error("Google Maps key missing");
-
-  const url =
-    `https://maps.googleapis.com/maps/api/directions/json?` +
-    `origin=${start.latitude},${start.longitude}` +
-    `&destination=${end.latitude},${end.longitude}` +
-    `&key=${key}`;
-
-  const res = await fetch(url);
-  const json = await res.json();
-
-  if (!json.routes || json.routes.length === 0) return { coords: [], eta: null };
-
-  const route = json.routes[0];
-  const encodedPolyline = route.overview_polyline?.points;
-  if (!encodedPolyline) return { coords: [], eta: null };
-
-  // Decode polyline manually or use a library
-  const coords = decodePolyline(encodedPolyline);
-  const eta = route.legs[0]?.duration?.text || null;
-
-  return { coords, eta };
+interface RouteResult {
+  coords: Coords[];
+  distance: number; // in kilometers
+  duration: number; // in minutes
+  eta: string | null;
 }
 
-// Simple polyline decoder (replace with @mapbox/polyline if installed)
+// OSRM Demo server (free, no API key required)
+// For production, consider self-hosting OSRM or using a paid service
+const OSRM_BASE_URL = 'https://router.project-osrm.org';
+
+export async function getRoute(start: Coords, end: Coords): Promise<RouteResult> {
+  try {
+    // OSRM expects coordinates as lng,lat (not lat,lng)
+    const url = `${OSRM_BASE_URL}/route/v1/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?overview=full&geometries=polyline`;
+
+    const res = await fetch(url);
+    const json = await res.json();
+
+    if (json.code !== 'Ok' || !json.routes || json.routes.length === 0) {
+      console.warn('OSRM routing failed:', json.message || 'No route found');
+      return { coords: [], distance: 0, duration: 0, eta: null };
+    }
+
+    const route = json.routes[0];
+    const encodedPolyline = route.geometry;
+    
+    if (!encodedPolyline) {
+      return { coords: [], distance: 0, duration: 0, eta: null };
+    }
+
+    // Decode the polyline to get road-following coordinates
+    const coords = decodePolyline(encodedPolyline);
+    
+    // Distance in kilometers (OSRM returns meters)
+    const distance = route.distance / 1000;
+    
+    // Duration in minutes (OSRM returns seconds)
+    const duration = route.duration / 60;
+    
+    // Format ETA
+    const eta = formatDuration(duration);
+
+    return { coords, distance, duration, eta };
+  } catch (error) {
+    console.error('Error fetching route:', error);
+    return { coords: [], distance: 0, duration: 0, eta: null };
+  }
+}
+
+// Format duration to human readable string
+function formatDuration(minutes: number): string {
+  if (minutes < 1) {
+    return '< 1 min';
+  } else if (minutes < 60) {
+    return `${Math.round(minutes)} min`;
+  } else {
+    const hours = Math.floor(minutes / 60);
+    const mins = Math.round(minutes % 60);
+    if (mins === 0) {
+      return `${hours} hr`;
+    }
+    return `${hours} hr ${mins} min`;
+  }
+}
+
+// Polyline decoder for OSRM/Google encoded polylines
 function decodePolyline(encoded: string): Coords[] {
   const coords: Coords[] = [];
   let index = 0;
@@ -64,4 +105,39 @@ function decodePolyline(encoded: string): Coords[] {
   }
 
   return coords;
+}
+
+// Get route with multiple waypoints (for meeting points)
+export async function getRouteWithWaypoints(points: Coords[]): Promise<RouteResult> {
+  if (points.length < 2) {
+    return { coords: [], distance: 0, duration: 0, eta: null };
+  }
+
+  try {
+    // Build waypoints string for OSRM
+    const waypointsStr = points
+      .map(p => `${p.longitude},${p.latitude}`)
+      .join(';');
+
+    const url = `${OSRM_BASE_URL}/route/v1/driving/${waypointsStr}?overview=full&geometries=polyline`;
+
+    const res = await fetch(url);
+    const json = await res.json();
+
+    if (json.code !== 'Ok' || !json.routes || json.routes.length === 0) {
+      console.warn('OSRM routing failed:', json.message || 'No route found');
+      return { coords: [], distance: 0, duration: 0, eta: null };
+    }
+
+    const route = json.routes[0];
+    const coords = decodePolyline(route.geometry);
+    const distance = route.distance / 1000;
+    const duration = route.duration / 60;
+    const eta = formatDuration(duration);
+
+    return { coords, distance, duration, eta };
+  } catch (error) {
+    console.error('Error fetching route with waypoints:', error);
+    return { coords: [], distance: 0, duration: 0, eta: null };
+  }
 }

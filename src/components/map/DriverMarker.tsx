@@ -1,6 +1,6 @@
 import React from 'react';
-import { Marker } from 'react-native-maps';
-import { colors } from '../../constants';
+import { View, Text, StyleSheet } from 'react-native';
+import { COLORS } from '../../constants';
 
 interface DriverMarkerProps {
   coordinate: {
@@ -12,6 +12,8 @@ interface DriverMarkerProps {
   onPress?: () => void;
 }
 
+// This component is now a simple marker representation
+// The actual map rendering is done by OpenStreetMap component
 export const DriverMarker: React.FC<DriverMarkerProps> = ({
   coordinate,
   heading = 0,
@@ -19,16 +21,32 @@ export const DriverMarker: React.FC<DriverMarkerProps> = ({
   onPress,
 }) => {
   return (
-    <Marker
-      coordinate={coordinate}
-      title={driverName || 'Driver'}
-      description="Your driver"
-      pinColor={colors.primary}
-      rotation={heading}
-      anchor={{ x: 0.5, y: 0.5 }}
-      onPress={onPress}
-    >
-      {/* Custom car icon can be added here */}
-    </Marker>
+    <View style={styles.container}>
+      <View style={styles.marker}>
+        <Text style={styles.icon}>🚗</Text>
+      </View>
+      {driverName && <Text style={styles.name}>{driverName}</Text>}
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+  },
+  marker: {
+    backgroundColor: COLORS.primary,
+    padding: 8,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: COLORS.white,
+  },
+  icon: {
+    fontSize: 16,
+  },
+  name: {
+    fontSize: 10,
+    color: COLORS.textPrimary,
+    marginTop: 2,
+  },
+});

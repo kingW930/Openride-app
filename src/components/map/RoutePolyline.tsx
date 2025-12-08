@@ -1,6 +1,6 @@
 import React from 'react';
-import { Polyline } from 'react-native-maps';
-import { colors } from '../../constants';
+import { View, StyleSheet } from 'react-native';
+import { COLORS } from '../../constants';
 
 interface RoutePolylineProps {
   coordinates: Array<{
@@ -11,22 +11,16 @@ interface RoutePolylineProps {
   strokeWidth?: number;
 }
 
+// This component is now a placeholder
+// Route rendering is handled by OpenStreetMap component
 export const RoutePolyline: React.FC<RoutePolylineProps> = ({
   coordinates,
-  strokeColor = colors.primary,
+  strokeColor = COLORS.primary,
   strokeWidth = 4,
 }) => {
-  if (coordinates.length < 2) {
-    return null;
-  }
-
-  return (
-    <Polyline
-      coordinates={coordinates}
-      strokeColor={strokeColor}
-      strokeWidth={strokeWidth}
-      lineCap="round"
-      lineJoin="round"
-    />
-  );
+  // The actual polyline is rendered inside OpenStreetMap
+  // This component is kept for API compatibility
+  return null;
 };
+
+const styles = StyleSheet.create({});

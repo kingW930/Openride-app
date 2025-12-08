@@ -1,10 +1,9 @@
 // src/components/map/RideMap.tsx
-import React, { useEffect, useRef, useState } from 'react';
-import { View, ActivityIndicator } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
-import Icon from 'react-native-vector-icons/Feather';
+import React, { useEffect, useState, Platform } from 'react';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { socketService } from '@/services/socket';
 import { COLORS } from '@/constants';
+import { OpenStreetMap } from './OpenStreetMap';
 
 interface RideMapProps {
   userLocation?: { latitude: number; longitude: number } | null;
@@ -21,8 +20,7 @@ type DriverMarker = {
   meta?: any;
 };
 
-export const RideMap: React.FC<RideMapProps> = ({ userLocation, showDrivers = true, style, zoom = 0.012 }) => {
-  const mapRef = useRef<MapView | null>(null);
+export const RideMap: React.FC<RideMapProps> = ({ userLocation, showDrivers = true, style, zoom = 14 }) => {
   const [drivers, setDrivers] = useState<Record<string, DriverMarker>>({});
   const [connected, setConnected] = useState(false);
 
@@ -35,7 +33,6 @@ export const RideMap: React.FC<RideMapProps> = ({ userLocation, showDrivers = tr
 
       // Listen for driver locations
       const onDriverLocation = (payload: any) => {
-        // payload: { id, latitude, longitude, heading?, meta? }
         setDrivers(prev => ({
           ...prev,
           [payload.id]: { id: payload.id, lat: payload.latitude, lon: payload.longitude, heading: payload.heading, meta: payload.meta },
@@ -65,49 +62,46 @@ export const RideMap: React.FC<RideMapProps> = ({ userLocation, showDrivers = tr
     };
   }, []);
 
-  useEffect(() => {
-    // optionally center map on user location when available
-    if (userLocation && mapRef.current) {
-      mapRef.current.animateToRegion({
-        latitude: userLocation.latitude,
-        longitude: userLocation.longitude,
-        latitudeDelta: zoom,
-        longitudeDelta: zoom,
-      });
-    }
-  }, [userLocation]);
-
   if (!userLocation && !connected) {
     return (
-      <View style={[{ flex: 1, justifyContent: 'center', alignItems: 'center' }, style]}>
-        <ActivityIndicator />
+      <View style={[styles.loading, style]}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
       </View>
     );
   }
 
+  // Convert drivers to markers format
+  const driverMarkers = showDrivers
+    ? Object.values(drivers).map(d => ({
+        id: d.id,
+        latitude: d.lat,
+        longitude: d.lon,
+        title: `Driver ${d.id}`,
+        type: 'driver' as const,
+      }))
+    : [];
+
   return (
-    <MapView
-      ref={(r) => (mapRef.current = r)}
-      style={[{ flex: 1 }, style]}
-      initialRegion={
-        userLocation
-          ? { latitude: userLocation.latitude, longitude: userLocation.longitude, latitudeDelta: zoom, longitudeDelta: zoom }
-          : { latitude: 6.5244, longitude: 3.3792, latitudeDelta: zoom, longitudeDelta: zoom }
-      }
-      showsUserLocation={!!userLocation}
-      showsMyLocationButton={true}
-    >
-      {showDrivers && Object.values(drivers).map((d) => (
-        <Marker
-          key={d.id}
-          coordinate={{ latitude: d.lat, longitude: d.lon }}
-          anchor={{ x: 0.5, y: 0.5 }}
-        >
-          <Icon name="truck" size={26} color={COLORS.primary} />
-        </Marker>
-      ))}
-    </MapView>
+    <OpenStreetMap
+      latitude={userLocation?.latitude || 6.5244}
+      longitude={userLocation?.longitude || 3.3792}
+      zoom={zoom}
+      markers={driverMarkers}
+      showUserLocation={!!userLocation}
+      style={[styles.map, style]}
+    />
   );
 };
+
+const styles = StyleSheet.create({
+  map: {
+    flex: 1,
+  },
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export default RideMap;

@@ -37,21 +37,21 @@ export function Button({
 }: ButtonProps) {
   const isDisabled = disabled || loading;
 
-  const buttonStyles = [
+  const buttonStyles: ViewStyle[] = [
     styles.base,
     styles[variant],
     styles[size],
-    fullWidth && styles.fullWidth,
-    isDisabled && styles.disabled,
-    style,
+    fullWidth ? styles.fullWidth : {},
+    isDisabled ? styles.disabled : {},
+    style || {},
   ];
 
-  const textStyles = [
+  const textStyles: TextStyle[] = [
     styles.text,
-    styles[`text_${variant}`],
-    styles[`text_${size}`],
-    isDisabled && styles.textDisabled,
-    textStyle,
+    styles[`text_${variant}` as keyof typeof styles] as TextStyle,
+    styles[`text_${size}` as keyof typeof styles] as TextStyle,
+    isDisabled ? styles.textDisabled : {},
+    textStyle || {},
   ];
 
   return (
@@ -59,7 +59,7 @@ export function Button({
       style={buttonStyles}
       onPress={onPress}
       disabled={isDisabled}
-      activeOpacity={0.8}
+      activeOpacity={0.7}
     >
       {loading ? (
         <ActivityIndicator
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0,
   },
   ghost: {
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     shadowOpacity: 0,
   },
   danger: {
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   text_ghost: {
-    color: COLORS.primary,
+    color: COLORS.white,
   },
   text_danger: {
     color: COLORS.white,
@@ -157,6 +157,6 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.lg,
   },
   textDisabled: {
-    opacity: 0.7,
+    opacity: 0.8,
   },
 });
