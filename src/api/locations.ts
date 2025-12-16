@@ -1,7 +1,8 @@
 // src/api/locations.ts
 // Location API service for geocoding and meeting points
 import axiosInstance from './axiosInstance';
-import { NOMINATIM_BASE_URL, ENDPOINTS } from './endpoints';
+import { NOMINATIM_BASE_URL, LOCATION_ENDPOINTS } from './endpoints';
+import { MeetingPoint, ApiResponse } from '../types/api';
 
 // ===========================================
 // Types
@@ -14,19 +15,6 @@ export interface LocationSuggestion {
   longitude: number;
   type?: string;
   distance?: number;
-}
-
-export interface MeetingPointAPI {
-  id: string;
-  name: string;
-  type: 'bus_stop' | 't_junction' | 'landmark' | 'intersection';
-  latitude: number;
-  longitude: number;
-  address?: string;
-  distanceFromUser?: number;
-  distanceFromRoute?: number;
-  walkingTime?: number;
-  isOnRoute?: boolean;
 }
 
 export interface ReverseGeocodeResult {
@@ -135,7 +123,7 @@ export async function reverseGeocodeNominatim(
 }
 
 // ===========================================
-// Backend API Integration (when backend is ready)
+// Backend API Integration
 // ===========================================
 
 /**
@@ -148,10 +136,13 @@ export async function searchLocationsAPI(
   lng?: number
 ): Promise<LocationSuggestion[]> {
   try {
-    const response = await axiosInstance.get(ENDPOINTS.location.SEARCH_LOCATIONS, {
-      params: { query, lat, lng },
-    });
-    return response.data.results;
+    const response = await axiosInstance.get<ApiResponse<{ results: LocationSuggestion[] }>>(
+      LOCATION_ENDPOINTS.SEARCH_LOCATIONS, 
+      {
+        params: { query, lat, lng },
+      }
+    );
+    return response.data.data.results;
   } catch (error) {
     console.error('Location search API error:', error);
     // Fallback to Nominatim if backend fails
@@ -167,10 +158,13 @@ export async function reverseGeocodeAPI(
   lng: number
 ): Promise<ReverseGeocodeResult | null> {
   try {
-    const response = await axiosInstance.get(ENDPOINTS.location.REVERSE_GEOCODE, {
-      params: { lat, lng },
-    });
-    return response.data;
+    const response = await axiosInstance.get<ApiResponse<ReverseGeocodeResult>>(
+      LOCATION_ENDPOINTS.REVERSE_GEOCODE, 
+      {
+        params: { lat, lng },
+      }
+    );
+    return response.data.data;
   } catch (error) {
     console.error('Reverse geocode API error:', error);
     // Fallback to Nominatim
@@ -187,17 +181,20 @@ export async function getMeetingPointsAPI(
   userLng: number,
   destLat: number,
   destLng: number
-): Promise<MeetingPointAPI[]> {
+): Promise<MeetingPoint[]> {
   try {
-    const response = await axiosInstance.get(ENDPOINTS.location.GET_MEETING_POINTS, {
-      params: {
-        lat: userLat,
-        lng: userLng,
-        destLat,
-        destLng,
-      },
-    });
-    return response.data.meetingPoints;
+    const response = await axiosInstance.get<ApiResponse<{ meetingPoints: MeetingPoint[] }>>(
+      LOCATION_ENDPOINTS.GET_MEETING_POINTS, 
+      {
+        params: {
+          lat: userLat,
+          lng: userLng,
+          destLat,
+          destLng,
+        },
+      }
+    );
+    return response.data.data.meetingPoints;
   } catch (error) {
     console.error('Meeting points API error:', error);
     // Return empty array, frontend will use local fallback
@@ -213,10 +210,13 @@ export async function getPopularLocationsAPI(
   lng: number
 ): Promise<LocationSuggestion[]> {
   try {
-    const response = await axiosInstance.get(ENDPOINTS.location.GET_POPULAR_LOCATIONS, {
-      params: { lat, lng },
-    });
-    return response.data.locations;
+    const response = await axiosInstance.get<ApiResponse<{ locations: LocationSuggestion[] }>>(
+      LOCATION_ENDPOINTS.GET_POPULAR_LOCATIONS, 
+      {
+        params: { lat, lng },
+      }
+    );
+    return response.data.data.locations;
   } catch (error) {
     console.error('Popular locations API error:', error);
     return [];

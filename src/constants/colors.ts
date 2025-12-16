@@ -2,6 +2,7 @@
 export const COLORS = {
   // Primary (white first) + orange highlight
   background: '#FFFFFF',
+  backgroundSecondary: '#F8FAFC',
   surface: '#FFFFFF',
   white: '#FFFFFF',
   primary: '#FF6B35',       // orange highlight (brand)

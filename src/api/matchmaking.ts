@@ -1,18 +1,48 @@
-// src/api/matchmaking.ts
-import client from './axiosInstance'; // ensure you have axiosInstance.ts that exports configured axios
-// baseURL is your matchmaking service (from PRD) e.g. process.env.MATCHMAKING_API
+import axiosInstance from './axiosInstance';
+import { MATCHMAKING_ENDPOINTS } from './endpoints';
+import { ApiResponse } from '../types/api';
 
-export async function findDriverNearby(coords: { latitude: number; longitude: number }) {
-  const res = await client.post('/v1/find', coords);
-  return res.data;
-}
+/**
+ * Find available drivers for a ride
+ */
+export const findDrivers = async (data: {
+  pickupLat: number;
+  pickupLng: number;
+  destLat: number;
+  destLng: number;
+  seats: number;
+  departureTime?: string;
+}): Promise<ApiResponse<{ drivers: any[] }>> => {
+  const response = await axiosInstance.post<ApiResponse<{ drivers: any[] }>>(
+    MATCHMAKING_ENDPOINTS.FIND_DRIVERS,
+    data
+  );
+  return response.data;
+};
 
-export async function driverAcceptRequest(requestId: string, driverId: string) {
-  const res = await client.post(`/v1/requests/${requestId}/accept`, { driverId });
-  return res.data;
-}
+/**
+ * Find riders along driver's route
+ */
+export const findRiders = async (data: {
+  driverLat: number;
+  driverLng: number;
+  destLat: number;
+  destLng: number;
+  routeId: string;
+}): Promise<ApiResponse<{ riders: any[] }>> => {
+  const response = await axiosInstance.post<ApiResponse<{ riders: any[] }>>(
+    MATCHMAKING_ENDPOINTS.FIND_RIDERS,
+    data
+  );
+  return response.data;
+};
 
-export async function driverRejectRequest(requestId: string, driverId: string) {
-  const res = await client.post(`/v1/requests/${requestId}/reject`, { driverId });
-  return res.data;
-}
+/**
+ * Get AI-powered route suggestions
+ */
+export const getRouteSuggestions = async (): Promise<ApiResponse<{ suggestions: any[] }>> => {
+  const response = await axiosInstance.get<ApiResponse<{ suggestions: any[] }>>(
+    MATCHMAKING_ENDPOINTS.GET_SUGGESTIONS
+  );
+  return response.data;
+};

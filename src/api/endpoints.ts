@@ -393,6 +393,94 @@ export const PAYMENT_ENDPOINTS = {
 };
 
 // ===========================================
+// PAYOUTS ENDPOINTS
+// ===========================================
+export const PAYOUTS_ENDPOINTS = {
+  /**
+   * POST /v1/payouts/request
+   * Request: { amount: number, currency: string }
+   * Response: { payoutId: string, status: 'PENDING' }
+   * Description: Request a payout
+   */
+  REQUEST_PAYOUT: `/${API_VERSION}/payouts/request`,
+
+  /**
+   * GET /v1/payouts/requests
+   * Response: { payouts: PayoutRequest[] }
+   * Description: Get payout history
+   */
+  GET_PAYOUTS: `/${API_VERSION}/payouts/requests`,
+
+  /**
+   * GET /v1/payouts/balance
+   * Response: { available: number, pending: number, currency: string }
+   * Description: Get driver's wallet balance
+   */
+  GET_BALANCE: `/${API_VERSION}/payouts/balance`,
+
+  /**
+   * GET /v1/payouts/earnings
+   * Query: ?from=date&to=date
+   * Response: { totalEarnings: number, breakdown: any }
+   * Description: Get earnings report
+   */
+  GET_EARNINGS: `/${API_VERSION}/payouts/earnings`,
+
+  /**
+   * POST /v1/payouts/bank-accounts
+   * Request: { bankName: string, accountNumber: string, accountName: string }
+   * Response: { bankAccount: BankAccount }
+   * Description: Add a bank account for payouts
+   */
+  ADD_BANK_ACCOUNT: `/${API_VERSION}/payouts/bank-accounts`,
+
+  /**
+   * GET /v1/payouts/bank-accounts
+   * Response: { bankAccounts: BankAccount[] }
+   * Description: Get saved bank accounts
+   */
+  GET_BANK_ACCOUNTS: `/${API_VERSION}/payouts/bank-accounts`,
+};
+
+// ===========================================
+// TICKETING ENDPOINTS
+// ===========================================
+export const TICKETING_ENDPOINTS = {
+  /**
+   * POST /v1/tickets/verify
+   * Request: { ticketData: string, signature: string }
+   * Response: { valid: boolean, ticket: Ticket }
+   * Description: Verify a ticket signature (offline capable)
+   */
+  VERIFY_TICKET: `/${API_VERSION}/tickets/verify`,
+
+  /**
+   * GET /v1/tickets/public-key
+   * Response: { publicKey: string, keyId: string }
+   * Description: Get public key for offline verification
+   */
+  GET_PUBLIC_KEY: `/${API_VERSION}/tickets/public-key`,
+};
+
+// ===========================================
+// SEARCH ENDPOINTS
+// ===========================================
+export const SEARCH_ENDPOINTS = {
+  /**
+   * POST /v1/search
+   * Request: { 
+   *   origin: { lat, lng }, 
+   *   destination: { lat, lng }, 
+   *   date: string,
+   *   preferences: { ... } 
+   * }
+   * Response: { routes: Route[] }
+   * Description: Advanced route search
+   */
+  ADVANCED_SEARCH: `/${API_VERSION}/search`,
+};
+
+// ===========================================
 // TRIP ENDPOINTS
 // ===========================================
 export const TRIP_ENDPOINTS = {
@@ -699,6 +787,9 @@ export const ENDPOINTS = {
   route: ROUTE_ENDPOINTS,
   booking: BOOKING_ENDPOINTS,
   payment: PAYMENT_ENDPOINTS,
+  payouts: PAYOUTS_ENDPOINTS,
+  ticketing: TICKETING_ENDPOINTS,
+  search: SEARCH_ENDPOINTS,
   trip: TRIP_ENDPOINTS,
   driver: DRIVER_ENDPOINTS,
   match: MATCHMAKING_ENDPOINTS,

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { Modal } from '../ui/Modal';
-import { colors, sizes } from '../../constants';
+import { COLORS, SPACING, RADIUS } from '@/constants';
 
 interface PaymentModalProps {
   visible: boolean;
@@ -24,10 +24,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const handleNavigationStateChange = (navState: any) => {
     const { url } = navState;
 
-    // Check for success/failure callback URLs
-    if (url.includes('/payment/success')) {
+    // Check for success/failure callback URLs based on backend config
+    // Usually these are configured in the payment gateway settings
+    if (url.includes('/payment/success') || url.includes('status=success')) {
       onSuccess();
-    } else if (url.includes('/payment/failure') || url.includes('/payment/cancel')) {
+    } else if (url.includes('/payment/failure') || url.includes('status=failed') || url.includes('/payment/cancel')) {
       onFailure();
     }
   };
@@ -37,7 +38,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       <View style={styles.container}>
         {loading && (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.primary} />
+            <ActivityIndicator size="large" color={COLORS.primary} />
           </View>
         )}
         <WebView
@@ -48,6 +49,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           style={styles.webview}
           javaScriptEnabled
           domStorageEnabled
+          startInLoadingState={true}
+          renderLoading={() => <View />} // Handled by custom loader
         />
       </View>
     </Modal>
@@ -56,17 +59,20 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    height: 500,
-    position: 'relative',
+    height: 500, // Fixed height for the modal content
+    backgroundColor: COLORS.background,
+    borderRadius: RADIUS.md,
+    overflow: 'hidden',
   },
   loadingContainer: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.white,
+    backgroundColor: COLORS.background,
     zIndex: 1,
   },
   webview: {
     flex: 1,
+    backgroundColor: 'transparent',
   },
 });

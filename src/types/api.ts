@@ -3,6 +3,7 @@
 // OPENRIDE API TYPES - Complete Type Definitions
 // ========================================================
 
+export * from './user';
 import { User } from './user';
 
 // ===========================================
@@ -563,3 +564,51 @@ export interface KYCStatusResponse {
     reason?: string;
   }[];
 }
+
+// ===========================================
+// Payouts
+// ===========================================
+
+export type PayoutStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
+export interface PayoutRequest {
+  id: string;
+  driverId: string;
+  amount: number;
+  currency: string;
+  status: PayoutStatus;
+  bankAccountId: string;
+  requestedAt: string;
+  processedAt?: string;
+  reference?: string;
+}
+
+export interface BankAccount {
+  id: string;
+  userId: string;
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+  isDefault: boolean;
+  createdAt: string;
+}
+
+export interface WalletBalance {
+  available: number;
+  pending: number;
+  currency: string;
+  lastUpdated: string;
+}
+
+// ===========================================
+// Ticket Verification
+// ===========================================
+
+export interface TicketVerificationResponse {
+  valid: boolean;
+  ticket?: Ticket;
+  booking?: any; 
+  error?: string;
+}
+
+
