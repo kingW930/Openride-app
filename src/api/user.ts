@@ -8,13 +8,20 @@ import {
 } from '../types/api';
 
 /**
+ * Get current user profile
+ */
+export const getCurrentUser = async (): Promise<User> => {
+  const response = await axiosInstance.get<ApiResponse<User>>('/v1/users/me');
+  return response.data.data;
+};
+
+/**
  * Get public user profile
  * @param userId - The user ID
  */
-export const getUserProfile = async (userId: string): Promise<ApiResponse<{ user: User }>> => {
-  const url = USER_ENDPOINTS.GET_USER.replace(':id', userId);
-  const response = await axiosInstance.get<ApiResponse<{ user: User }>>(url);
-  return response.data;
+export const getUserProfile = async (userId: string): Promise<User> => {
+  const response = await axiosInstance.get<ApiResponse<User>>(`/v1/users/${userId}`);
+  return response.data.data;
 };
 
 /**
@@ -22,13 +29,21 @@ export const getUserProfile = async (userId: string): Promise<ApiResponse<{ user
  * @param data - Profile data to update
  */
 export const updateProfile = async (
-  data: { name?: string; email?: string }
-): Promise<ApiResponse<{ user: User }>> => {
-  const response = await axiosInstance.put<ApiResponse<{ user: User }>>(
-    USER_ENDPOINTS.UPDATE_PROFILE,
+  data: { fullName?: string; email?: string }
+): Promise<User> => {
+  const response = await axiosInstance.patch<ApiResponse<User>>(
+    '/v1/users/me',
     data
   );
-  return response.data;
+  return response.data.data;
+};
+
+/**
+ * Upgrade to driver role
+ */
+export const upgradeToDriver = async (): Promise<User> => {
+  const response = await axiosInstance.post<ApiResponse<User>>('/v1/users/upgrade-to-driver');
+  return response.data.data;
 };
 
 /**
@@ -69,49 +84,32 @@ export const getUserStats = async (): Promise<ApiResponse<any>> => {
 // ===========================================
 
 /**
- * Submit KYC documents
- * @param documents - Object containing local URIs for documents
+ * Submit KYC documents for driver verification
+ * @param documents - KYC document URLs/data
  */
-export const submitKYC = async (
-  documents: KYCSubmission
-): Promise<ApiResponse<{ kycId: string; status: string }>> => {
-  const formData = new FormData();
-
-  const appendFile = (key: string, uri: string | File) => {
-    if (typeof uri === 'string') {
-      const filename = uri.split('/').pop() || `${key}.jpg`;
-      const match = /\.(\w+)$/.exec(filename);
-      const type = match ? `image/${match[1]}` : 'image/jpeg';
-      // @ts-ignore
-      formData.append(key, { uri, name: filename, type });
-    }
-  };
-
-  appendFile('driversLicense', documents.driversLicense);
-  appendFile('vehicleRegistration', documents.vehicleRegistration);
-  appendFile('insurance', documents.insurance);
-  appendFile('profilePhoto', documents.profilePhoto);
-
-  const response = await axiosInstance.post<ApiResponse<{ kycId: string; status: string }>>(
-    KYC_ENDPOINTS.SUBMIT_KYC,
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }
+export const submitKYCDocuments = async (
+  documents: {
+    licensePhotoUrl: string;
+    vehiclePhotoUrl: string;
+    kycNotes?: string;
+  }
+): Promise<User> => {
+  const response = await axiosInstance.post<ApiResponse<User>>(
+    '/v1/drivers/kyc-documents',
+    documents
   );
-  return response.data;
+  return response.data.data;
 };
 
 /**
- * Get KYC status
+ * Get KYC status (from user profile)
  */
-export const getKYCStatus = async (): Promise<ApiResponse<KYCStatusResponse>> => {
-  const response = await axiosInstance.get<ApiResponse<KYCStatusResponse>>(
-    KYC_ENDPOINTS.GET_KYC_STATUS
-  );
-  return response.data;
+export const getKYCStatus = async (): Promise<{ status: string; reason?: string }> => {
+  const user = await getCurrentUser();
+  return {
+    status: user.kycStatus,
+    reason: user.driverProfile?.kycNotes
+  };
 };
 
 /**

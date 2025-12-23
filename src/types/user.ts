@@ -1,32 +1,28 @@
-export type UserRole = 'rider' | 'driver';
+export type UserRole = 'RIDER' | 'DRIVER' | 'ADMIN';
 
 export type KYCStatus = 'PENDING' | 'VERIFIED' | 'REJECTED';
 
 export interface User {
   id: string;
   phone: string;
-  name: string;
+  fullName: string;
   email?: string;
   role: UserRole;
-  avatar?: string;
-  rating?: number;
   kycStatus: KYCStatus;
+  rating?: number;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  driverProfile?: DriverProfile;
 }
 
 export interface DriverProfile {
-  userId: string;
-  licenseNumber: string;
-  vehicleId: string;
-  vehicleMake: string;
-  vehicleModel: string;
-  vehicleYear: number;
-  vehicleColor: string;
-  licensePlate: string;
+  id: string;
+  licensePhotoUrl?: string;
+  vehiclePhotoUrl?: string;
+  kycNotes?: string;
   totalTrips: number;
   totalEarnings: number;
-  isOnline: boolean;
 }
 
 export interface RiderProfile {

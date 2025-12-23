@@ -56,10 +56,14 @@ export const advancedSearch = async (data: {
  */
 export const createBooking = async (data: {
   routeId: string;
-  seats: number;
-  pickupPoint: Coordinates & { address: string };
-  dropoffPoint: Coordinates & { address: string };
-  idempotencyKey: string;
+  originStopId: string;
+  destinationStopId: string;
+  travelDate: string;
+  seatsBooked: number;
+  idempotencyKey?: string;
+  searchId?: string;
+  candidateRank?: number;
+  candidateCount?: number;
 }): Promise<ApiResponse<{ booking: Booking; paymentIntent: any }>> => {
   const response = await axiosInstance.post<ApiResponse<{ booking: Booking; paymentIntent: any }>>(
     BOOKING_ENDPOINTS.CREATE_BOOKING, 

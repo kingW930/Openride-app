@@ -12,64 +12,56 @@ import {
  * Initialize payment for a booking
  * @param bookingId - The booking ID to pay for
  * @param amount - Amount to pay
+ * @param customerEmail - Customer email for receipt
+ * @param customerName - Customer name
  * @param currency - Currency code (e.g., NGN)
  * @param idempotencyKey - Unique key to prevent duplicate charges
  */
 export const initiatePayment = async (
   bookingId: string,
   amount: number,
+  customerEmail: string,
+  customerName: string,
   currency: string = 'NGN',
   idempotencyKey: string
-): Promise<ApiResponse<InitiatePaymentResponse>> => {
-  const response = await axiosInstance.post<ApiResponse<InitiatePaymentResponse>>(
+): Promise<Payment> => {
+  const response = await axiosInstance.post<Payment>(
     PAYMENT_ENDPOINTS.INITIATE_PAYMENT,
-    { bookingId, amount, currency, idempotencyKey }
+    { bookingId, amount, currency, customerEmail, customerName, idempotencyKey }
   );
   return response.data;
 };
 
 /**
- * Verify payment status
+ * Verify payment status (manual check)
  * @param paymentId - The payment ID
- * @param transactionRef - The transaction reference from the gateway
  */
 export const verifyPayment = async (
-  paymentId: string,
-  transactionRef: string
-): Promise<ApiResponse<{ verified: boolean; payment: Payment }>> => {
-  const url = PAYMENT_ENDPOINTS.VERIFY_PAYMENT.replace(':id', paymentId);
-  const response = await axiosInstance.post<ApiResponse<{ verified: boolean; payment: Payment }>>(
-    url,
-    { transactionRef }
-  );
+  paymentId: string
+): Promise<Payment> => {
+  const url = `/v1/payments/${paymentId}/verify`;
+  const response = await axiosInstance.post<Payment>(url);
   return response.data;
 };
 
 /**
- * Get payment status
+ * Get payment details
  * @param paymentId - The payment ID
  */
-export const getPaymentStatus = async (
+export const getPayment = async (
   paymentId: string
-): Promise<ApiResponse<{ status: PaymentStatus; transaction: any }>> => {
-  const url = PAYMENT_ENDPOINTS.GET_PAYMENT_STATUS.replace(':id', paymentId);
-  const response = await axiosInstance.get<ApiResponse<{ status: PaymentStatus; transaction: any }>>(url);
+): Promise<Payment> => {
+  const url = `/v1/payments/${paymentId}`;
+  const response = await axiosInstance.get<Payment>(url);
   return response.data;
 };
 
 /**
  * Get payment history
- * @param page - Page number
- * @param limit - Items per page
+ * @returns List of user's payments
  */
-export const getPaymentHistory = async (
-  page: number = 1,
-  limit: number = 20
-): Promise<ApiResponse<PaginatedResponse<Payment>>> => {
-  const response = await axiosInstance.get<ApiResponse<PaginatedResponse<Payment>>>(
-    PAYMENT_ENDPOINTS.GET_PAYMENT_HISTORY,
-    { params: { page, limit } }
-  );
+export const getPaymentHistory = async (): Promise<Payment[]> => {
+  const response = await axiosInstance.get<Payment[]>('/v1/payments/my-payments');
   return response.data;
 };
 

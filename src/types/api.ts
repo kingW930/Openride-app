@@ -193,22 +193,32 @@ export type BookingStatus =
 
 export interface Booking {
   id: string;
+  bookingReference: string;
   routeId: string;
   riderId: string;
   driverId: string;
-  seats: number;
-  pickupPoint: Location;
-  dropoffPoint: Location;
-  pickupStopId?: string; // Legacy support
-  dropoffStopId?: string; // Legacy support
-  status: BookingStatus;
-  price: number;
+  originStop: Stop;
+  destinationStop: Stop;
+  travelDate: string;
+  departureTime: string;
+  seatsBooked: number;
+  seatNumbers?: number[];
+  pricePerSeat: number;
   totalPrice: number;
+  platformFee: number;
+  status: BookingStatus;
   paymentId?: string;
+  paymentStatus: string;
   ticketId?: string;
+  cancellationReason?: string;
+  cancelledAt?: string;
+  refundAmount?: number;
+  refundStatus?: string;
+  bookingSource?: string;
   createdAt: string;
   updatedAt: string;
   expiresAt?: string;
+  confirmedAt?: string;
   route?: RouteSummary;
   rider?: User;
   driver?: DriverSummary;
@@ -217,10 +227,14 @@ export interface Booking {
 
 export interface CreateBookingRequest {
   routeId: string;
-  seats: number;
-  pickupPoint: Location;
-  dropoffPoint: Location;
-  idempotencyKey: string;
+  originStopId: string;
+  destinationStopId: string;
+  travelDate: string; // YYYY-MM-DD format
+  seatsBooked: number;
+  idempotencyKey?: string;
+  searchId?: string;
+  candidateRank?: number;
+  candidateCount?: number;
 }
 
 export interface CreateBookingResponse {
@@ -276,26 +290,34 @@ export type PaymentStatus =
 export interface Payment {
   id: string;
   bookingId: string;
+  riderId: string;
   amount: number;
   currency: string;
   status: PaymentStatus;
-  provider: 'interswitch' | 'paystack' | 'flutterwave';
-  transactionRef: string;
-  providerRef?: string;
-  widgetToken?: string;
-  paymentUrl?: string;
-  createdAt: string;
-  updatedAt: string;
+  paymentMethod?: string;
+  korapayReference: string;
+  korapayTransactionId?: string;
+  korapayCheckoutUrl: string;
+  failureReason?: string;
+  refundAmount?: number;
+  refundedAt?: string;
+  initiatedAt: string;
   completedAt?: string;
+  expiresAt: string;
+  createdAt: string;
 }
 
 export interface InitiatePaymentRequest {
   bookingId: string;
   amount: number;
   currency?: string;
+  customerEmail: string;
+  customerName: string;
   idempotencyKey: string;
 }
-
+: Payment;
+  checkoutUrl: string;
+}
 export interface InitiatePaymentResponse {
   paymentId: string;
   widgetToken: string;

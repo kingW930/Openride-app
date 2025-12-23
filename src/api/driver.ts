@@ -12,30 +12,54 @@ import {
   Pagination,
   PaginatedResponse
 } from '../types/api';
+import {
+  RouteCreateRequest,
+  RouteResponsePython,
+  RouteUpdateRequest,
+  convertRouteToSnakeCase,
+  convertRouteToCamelCase
+} from '../types/driver-api';
 
 // ===========================================
 // Route Management
 // ===========================================
 
 /**
- * Create a new route
+ * Create a new route (Python backend - uses snake_case)
  */
 export const createRoute = async (data: CreateRouteRequest): Promise<ApiResponse<{ route: Route }>> => {
-  const response = await axiosInstance.post<ApiResponse<{ route: Route }>>(
-    ROUTE_ENDPOINTS.CREATE_ROUTE,
-    data
+  // Convert camelCase to snake_case for Python backend
+  const snakeCaseData = convertRouteToSnakeCase(data);
+  
+  const response = await axiosInstance.post<RouteResponsePython>(
+    '/routes', // Python service uses /routes directly
+    snakeCaseData
   );
-  return response.data;
+  
+  // Convert response back to camelCase
+  const camelCaseRoute = convertRouteToCamelCase(response.data);
+  
+  return {
+    success: true,
+    data: { route: camelCaseRoute as Route }
+  };
 };
 
 /**
- * Get driver's active routes
+ * Get driver's active routes (Python backend)
  */
 export const getDriverRoutes = async (): Promise<ApiResponse<{ routes: Route[] }>> => {
-  const response = await axiosInstance.get<ApiResponse<{ routes: Route[] }>>(
-    ROUTE_ENDPOINTS.GET_DRIVER_ROUTES
+  const response = await axiosInstance.get<RouteResponsePython[]>(
+    '/routes' // Python service endpoint
   );
-  return response.data;
+  
+  // Convert all routes to camelCase
+  const camelCaseRoutes = response.data.map(convertRouteToCamelCase);
+  
+  return {
+    success: true,
+    data: { routes: camelCaseRoutes as Route[] }
+  };
 };
 
 /**

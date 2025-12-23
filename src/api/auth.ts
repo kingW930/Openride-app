@@ -9,7 +9,7 @@ export interface SendOTPResponse {
 }
 
 export interface VerifyOTPResponse {
-  token: string;
+  accessToken: string;
   refreshToken: string;
   user: User;
   isNewUser?: boolean;
@@ -38,40 +38,40 @@ export const verifyOTP = async (phone: string, code: string): Promise<VerifyOTPR
 };
 
 /**
- * Register new user
+ * Register new user (Note: This is typically handled via OTP verification in backend)
  */
 export const registerUser = async (data: {
   phone: string;
   name: string;
   email?: string;
   role: 'rider' | 'driver';
-}): Promise<{ user: User; token: string }> => {
-  const response = await axiosInstance.post<{ user: User; token: string }>(
+}): Promise<{ user: User; accessToken: string }> => {
+  const response = await axiosInstance.post<ApiResponse<{ user: User; accessToken: string }>>(
     AUTH_ENDPOINTS.REGISTER, 
     data
   );
-  return response.data;
+  return response.data.data;
 };
 
 /**
  * Refresh access token
  */
-export const refreshToken = async (refreshToken: string): Promise<{ token: string; refreshToken: string }> => {
-  const response = await axiosInstance.post<{ token: string; refreshToken: string }>(
+export const refreshToken = async (refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> => {
+  const response = await axiosInstance.post<ApiResponse<{ accessToken: string; refreshToken: string }>>(
     AUTH_ENDPOINTS.REFRESH_TOKEN, 
     { refreshToken }
   );
-  return response.data;
+  return response.data.data;
 };
 
 /**
  * Get current authenticated user
  */
 export const getCurrentUser = async (): Promise<User> => {
-  const response = await axiosInstance.get<{ user: User }>(
-    AUTH_ENDPOINTS.GET_CURRENT_USER
+  const response = await axiosInstance.get<ApiResponse<User>>(
+    '/v1/users/me'
   );
-  return response.data.user;
+  return response.data.data;
 };
 
 /**
