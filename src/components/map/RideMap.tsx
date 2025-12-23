@@ -1,9 +1,9 @@
 // src/components/map/RideMap.tsx
-import React, { useEffect, useState, Platform } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { socketService } from '@/services/socket';
 import { COLORS } from '@/constants';
-import { OpenStreetMap } from './OpenStreetMap';
+import { GoogleMapsView } from './GoogleMapsView';
 
 interface RideMapProps {
   userLocation?: { latitude: number; longitude: number } | null;
@@ -82,7 +82,7 @@ export const RideMap: React.FC<RideMapProps> = ({ userLocation, showDrivers = tr
     : [];
 
   return (
-    <OpenStreetMap
+    <GoogleMapsView
       latitude={userLocation?.latitude || 6.5244}
       longitude={userLocation?.longitude || 3.3792}
       zoom={zoom}
