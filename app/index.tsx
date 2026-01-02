@@ -1,10 +1,11 @@
 // app/index.tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { Redirect, useRouter } from 'expo-router';
+import { StyleSheet, ActivityIndicator } from 'react-native';
+import { Redirect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { COLORS, SPACING } from '@/constants';
+import { COLORS } from '@/constants';
 import { useAuthStore } from '@/store/authStore';
+import { isPassenger, isCaptain, requiresVerification } from '@/types/user';
 
 export default function Index() {
   const { user, isLoading } = useAuthStore();
@@ -26,7 +27,16 @@ export default function Index() {
 
   // Redirect based on auth state
   if (user) {
-    // User is logged in, redirect to appropriate home
+    // Check if user needs verification first
+    if (requiresVerification(user.kycStatus)) {
+      return <Redirect href="/verification" />;
+    }
+
+    // User is logged in and verified, redirect to appropriate home based on role
+    if (isCaptain(user.role)) {
+      return <Redirect href="/driver/home" />;
+    }
+    // Default: Passenger goes to rider screens
     return <Redirect href="/rider/home" />;
   }
 

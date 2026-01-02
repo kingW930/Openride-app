@@ -17,24 +17,26 @@ export interface VerifyOTPResponse {
 
 /**
  * Send OTP to phone number
+ * Note: Backend wraps response in ApiResponse, we extract the data
  */
 export const sendOTP = async (phone: string): Promise<SendOTPResponse> => {
-  const response = await axiosInstance.post<SendOTPResponse>(
+  const response = await axiosInstance.post<ApiResponse<SendOTPResponse>>(
     AUTH_ENDPOINTS.SEND_OTP, 
     { phone }
   );
-  return response.data;
+  return response.data.data;
 };
 
 /**
  * Verify OTP code
+ * Note: Backend wraps response in ApiResponse, we extract the data
  */
 export const verifyOTP = async (phone: string, code: string): Promise<VerifyOTPResponse> => {
-  const response = await axiosInstance.post<VerifyOTPResponse>(
+  const response = await axiosInstance.post<ApiResponse<VerifyOTPResponse>>(
     AUTH_ENDPOINTS.VERIFY_OTP, 
     { phone, code }
   );
-  return response.data;
+  return response.data.data;
 };
 
 /**
@@ -44,7 +46,7 @@ export const registerUser = async (data: {
   phone: string;
   name: string;
   email?: string;
-  role: 'rider' | 'driver';
+  role: 'PASSENGER' | 'CAPTAIN';
 }): Promise<{ user: User; accessToken: string }> => {
   const response = await axiosInstance.post<ApiResponse<{ user: User; accessToken: string }>>(
     AUTH_ENDPOINTS.REGISTER, 
@@ -55,11 +57,12 @@ export const registerUser = async (data: {
 
 /**
  * Refresh access token
+ * Note: Backend only returns new accessToken, not a new refreshToken
  */
-export const refreshToken = async (refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> => {
-  const response = await axiosInstance.post<ApiResponse<{ accessToken: string; refreshToken: string }>>(
+export const refreshToken = async (refreshTokenValue: string): Promise<{ accessToken: string }> => {
+  const response = await axiosInstance.post<ApiResponse<{ accessToken: string }>>(
     AUTH_ENDPOINTS.REFRESH_TOKEN, 
-    { refreshToken }
+    { refreshToken: refreshTokenValue }
   );
   return response.data.data;
 };

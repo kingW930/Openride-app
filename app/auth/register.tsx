@@ -23,8 +23,8 @@ export default function Register() {
       name: name || 'Test User',
       email: email || 'test@openride.com',
       phone: phone || '+234XXXXXXXXXX',
-      role: 'rider',
-      kycStatus: 'PENDING',
+      role: 'PASSENGER',
+      kycStatus: 'UNVERIFIED',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });

@@ -50,12 +50,12 @@ export const AUTH_ENDPOINTS = {
   REGISTER: `/${API_VERSION}/auth/register`,
 
   /**
-   * POST /v1/auth/refresh
+   * POST /v1/auth/refresh-token
    * Request: { refreshToken: string }
-   * Response: { token: string, refreshToken: string }
+   * Response: { accessToken: string }
    * Description: Refresh expired access token
    */
-  REFRESH_TOKEN: `/${API_VERSION}/auth/refresh`,
+  REFRESH_TOKEN: `/${API_VERSION}/auth/refresh-token`,
 
   /**
    * POST /v1/auth/logout

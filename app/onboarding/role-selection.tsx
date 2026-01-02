@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '@/store/authStore';
 import { COLORS, FONT_SIZE, FONT_WEIGHT, SPACING } from '@/constants';
 import { Ionicons } from '@expo/vector-icons';
+import { UserRole } from '@/types/user';
 
 interface RoleCardProps {
   iconName: keyof typeof Ionicons.glyphMap;
@@ -34,10 +35,10 @@ export default function RoleSelectionScreen() {
   const router = useRouter();
   const updateUser = useAuthStore((state) => state.updateUser);
 
-  const handleRoleSelection = (role: 'rider' | 'driver') => {
+  const handleRoleSelection = (role: UserRole) => {
     updateUser({ role });
     
-    if (role === 'rider') {
+    if (role === 'PASSENGER') {
       router.replace('/rider/home');
     } else {
       router.replace('/driver/home');
@@ -62,16 +63,16 @@ export default function RoleSelectionScreen() {
         <View style={styles.rolesContainer}>
           <RoleCard
             iconName="person-outline"
-            title="I am a Rider"
+            title="I'm a Passenger"
             description="Book rides and get to your destination safely"
-            onPress={() => handleRoleSelection('rider')}
+            onPress={() => handleRoleSelection('PASSENGER')}
             delay={200}
           />
           <RoleCard
             iconName="car-sport-outline"
-            title="I am a Driver"
-            description="Earn money by giving rides to passengers"
-            onPress={() => handleRoleSelection('driver')}
+            title="I'm a Captain"
+            description="Earn money by offering rides to passengers"
+            onPress={() => handleRoleSelection('CAPTAIN')}
             delay={400}
           />
         </View>
@@ -82,7 +83,7 @@ export default function RoleSelectionScreen() {
           style={styles.footer}
         >
           <Text style={styles.footerText}>
-            You can switch roles anytime in settings
+            You can upgrade to Captain anytime in settings
           </Text>
         </Animated.View>
       </View>

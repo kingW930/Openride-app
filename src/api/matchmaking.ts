@@ -1,9 +1,9 @@
-import axiosInstance from './axiosInstance';
+import { pythonAxiosInstance } from './axiosInstance';
 import { MATCHMAKING_ENDPOINTS } from './endpoints';
 import { ApiResponse } from '../types/api';
 
 /**
- * Find available drivers for a ride
+ * Find available drivers for a ride (Python matchmaking service)
  */
 export const findDrivers = async (data: {
   pickupLat: number;
@@ -13,7 +13,7 @@ export const findDrivers = async (data: {
   seats: number;
   departureTime?: string;
 }): Promise<ApiResponse<{ drivers: any[] }>> => {
-  const response = await axiosInstance.post<ApiResponse<{ drivers: any[] }>>(
+  const response = await pythonAxiosInstance.post<ApiResponse<{ drivers: any[] }>>(
     MATCHMAKING_ENDPOINTS.FIND_DRIVERS,
     data
   );
@@ -21,7 +21,7 @@ export const findDrivers = async (data: {
 };
 
 /**
- * Find riders along driver's route
+ * Find riders along driver's route (Python matchmaking service)
  */
 export const findRiders = async (data: {
   driverLat: number;
@@ -30,7 +30,7 @@ export const findRiders = async (data: {
   destLng: number;
   routeId: string;
 }): Promise<ApiResponse<{ riders: any[] }>> => {
-  const response = await axiosInstance.post<ApiResponse<{ riders: any[] }>>(
+  const response = await pythonAxiosInstance.post<ApiResponse<{ riders: any[] }>>(
     MATCHMAKING_ENDPOINTS.FIND_RIDERS,
     data
   );
@@ -38,10 +38,10 @@ export const findRiders = async (data: {
 };
 
 /**
- * Get AI-powered route suggestions
+ * Get AI-powered route suggestions (Python matchmaking service)
  */
 export const getRouteSuggestions = async (): Promise<ApiResponse<{ suggestions: any[] }>> => {
-  const response = await axiosInstance.get<ApiResponse<{ suggestions: any[] }>>(
+  const response = await pythonAxiosInstance.get<ApiResponse<{ suggestions: any[] }>>(
     MATCHMAKING_ENDPOINTS.GET_SUGGESTIONS
   );
   return response.data;

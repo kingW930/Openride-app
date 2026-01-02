@@ -1,4 +1,4 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance, { pythonAxiosInstance } from './axiosInstance';
 import { TRIP_ENDPOINTS } from './endpoints';
 import { 
   ApiResponse, 
@@ -11,10 +11,10 @@ import {
 } from '../types/api';
 
 /**
- * Start a trip
+ * Start a trip (Python fleet service)
  */
 export const startTrip = async (routeId: string): Promise<ApiResponse<{ trip: Trip }>> => {
-  const response = await axiosInstance.post<ApiResponse<{ trip: Trip }>>(
+  const response = await pythonAxiosInstance.post<ApiResponse<{ trip: Trip }>>(
     TRIP_ENDPOINTS.START_TRIP,
     { routeId }
   );
@@ -22,33 +22,33 @@ export const startTrip = async (routeId: string): Promise<ApiResponse<{ trip: Tr
 };
 
 /**
- * Get trip details
+ * Get trip details (Python fleet service)
  */
 export const getTrip = async (tripId: string): Promise<ApiResponse<{ trip: Trip }>> => {
   const url = TRIP_ENDPOINTS.GET_TRIP.replace(':id', tripId);
-  const response = await axiosInstance.get<ApiResponse<{ trip: Trip }>>(url);
+  const response = await pythonAxiosInstance.get<ApiResponse<{ trip: Trip }>>(url);
   return response.data;
 };
 
 /**
- * Get active trip
+ * Get active trip (Python fleet service)
  */
 export const getActiveTrip = async (): Promise<ApiResponse<{ trip: Trip | null }>> => {
-  const response = await axiosInstance.get<ApiResponse<{ trip: Trip | null }>>(
+  const response = await pythonAxiosInstance.get<ApiResponse<{ trip: Trip | null }>>(
     TRIP_ENDPOINTS.GET_ACTIVE_TRIP
   );
   return response.data;
 };
 
 /**
- * Update trip location
+ * Update trip location (Python fleet service)
  */
 export const updateTripLocation = async (
   tripId: string,
   data: TripLocationUpdate
 ): Promise<ApiResponse<{ success: boolean }>> => {
   const url = TRIP_ENDPOINTS.UPDATE_TRIP_LOCATION.replace(':id', tripId);
-  const response = await axiosInstance.post<ApiResponse<{ success: boolean }>>(
+  const response = await pythonAxiosInstance.post<ApiResponse<{ success: boolean }>>(
     url,
     data
   );
@@ -56,14 +56,14 @@ export const updateTripLocation = async (
 };
 
 /**
- * Arrived at pickup
+ * Arrived at pickup (Python fleet service)
  */
 export const arrivedAtPickup = async (
   tripId: string,
   stopId: string
 ): Promise<ApiResponse<{ trip: Trip }>> => {
   const url = TRIP_ENDPOINTS.ARRIVED_PICKUP.replace(':id', tripId);
-  const response = await axiosInstance.post<ApiResponse<{ trip: Trip }>>(
+  const response = await pythonAxiosInstance.post<ApiResponse<{ trip: Trip }>>(
     url,
     { stopId }
   );
@@ -71,27 +71,27 @@ export const arrivedAtPickup = async (
 };
 
 /**
- * Complete trip
+ * Complete trip (Python fleet service)
  */
 export const completeTrip = async (
   tripId: string
 ): Promise<ApiResponse<{ trip: Trip; earnings: number }>> => {
   const url = TRIP_ENDPOINTS.COMPLETE_TRIP.replace(':id', tripId);
-  const response = await axiosInstance.post<ApiResponse<{ trip: Trip; earnings: number }>>(
+  const response = await pythonAxiosInstance.post<ApiResponse<{ trip: Trip; earnings: number }>>(
     url
   );
   return response.data;
 };
 
 /**
- * Cancel trip
+ * Cancel trip (Python fleet service)
  */
 export const cancelTrip = async (
   tripId: string,
   reason: string
 ): Promise<ApiResponse<{ trip: Trip }>> => {
   const url = TRIP_ENDPOINTS.CANCEL_TRIP.replace(':id', tripId);
-  const response = await axiosInstance.post<ApiResponse<{ trip: Trip }>>(
+  const response = await pythonAxiosInstance.post<ApiResponse<{ trip: Trip }>>(
     url,
     { reason }
   );
@@ -99,7 +99,7 @@ export const cancelTrip = async (
 };
 
 /**
- * Rate trip
+ * Rate trip (Python fleet service)
  */
 export const rateTrip = async (
   tripId: string,
@@ -108,7 +108,7 @@ export const rateTrip = async (
   badges?: string[]
 ): Promise<ApiResponse<{ success: boolean }>> => {
   const url = TRIP_ENDPOINTS.RATE_TRIP.replace(':id', tripId);
-  const response = await axiosInstance.post<ApiResponse<{ success: boolean }>>(
+  const response = await pythonAxiosInstance.post<ApiResponse<{ success: boolean }>>(
     url,
     { rating, comment, badges }
   );
@@ -116,14 +116,14 @@ export const rateTrip = async (
 };
 
 /**
- * Get trip history
+ * Get trip history (Python fleet service)
  */
 export const getTripHistory = async (
   page: number = 1,
   limit: number = 20,
   role: 'rider' | 'driver' = 'rider'
 ): Promise<ApiResponse<PaginatedResponse<Trip>>> => {
-  const response = await axiosInstance.get<ApiResponse<PaginatedResponse<Trip>>>(
+  const response = await pythonAxiosInstance.get<ApiResponse<PaginatedResponse<Trip>>>(
     TRIP_ENDPOINTS.GET_TRIP_HISTORY,
     { params: { page, limit, role } }
   );
@@ -131,7 +131,7 @@ export const getTripHistory = async (
 };
 
 /**
- * Trigger SOS
+ * Trigger SOS (Python fleet service)
  */
 export const triggerSOS = async (
   tripId: string,
@@ -139,7 +139,7 @@ export const triggerSOS = async (
   message?: string
 ): Promise<ApiResponse<SOSResponse>> => {
   const url = TRIP_ENDPOINTS.SOS.replace(':id', tripId);
-  const response = await axiosInstance.post<ApiResponse<SOSResponse>>(
+  const response = await pythonAxiosInstance.post<ApiResponse<SOSResponse>>(
     url,
     { location, message }
   );

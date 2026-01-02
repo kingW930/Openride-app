@@ -39,10 +39,10 @@ export const updateProfile = async (
 };
 
 /**
- * Upgrade to driver role
+ * Upgrade to captain role
  */
-export const upgradeToDriver = async (): Promise<User> => {
-  const response = await axiosInstance.post<ApiResponse<User>>('/v1/users/upgrade-to-driver');
+export const upgradeToCaptain = async (): Promise<User> => {
+  const response = await axiosInstance.post<ApiResponse<User>>('/v1/users/upgrade-to-captain');
   return response.data.data;
 };
 
@@ -84,7 +84,7 @@ export const getUserStats = async (): Promise<ApiResponse<any>> => {
 // ===========================================
 
 /**
- * Submit KYC documents for driver verification
+ * Submit KYC documents for captain verification
  * @param documents - KYC document URLs/data
  */
 export const submitKYCDocuments = async (
@@ -95,7 +95,7 @@ export const submitKYCDocuments = async (
   }
 ): Promise<User> => {
   const response = await axiosInstance.post<ApiResponse<User>>(
-    '/v1/drivers/kyc-documents',
+    '/v1/captains/kyc-documents',
     documents
   );
   return response.data.data;
@@ -108,7 +108,7 @@ export const getKYCStatus = async (): Promise<{ status: string; reason?: string 
   const user = await getCurrentUser();
   return {
     status: user.kycStatus,
-    reason: user.driverProfile?.kycNotes
+    reason: user.captainProfile?.kycNotes
   };
 };
 

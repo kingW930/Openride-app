@@ -31,6 +31,7 @@ export default function RootLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="onboarding" />
         <Stack.Screen name="auth" />
+        <Stack.Screen name="verification" />
         <Stack.Screen name="rider" />
         <Stack.Screen name="driver" />
       </Stack>

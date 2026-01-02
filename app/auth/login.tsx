@@ -7,25 +7,28 @@ import { useRouter } from 'expo-router';
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from '@/constants';
 import Icon from 'react-native-vector-icons/Feather';
 
-const LoginForm = ({ role, onSubmit }: { role: 'rider'|'driver'; onSubmit: () => void }) => (
-  <View style={{paddingHorizontal: SPACING.lg, paddingTop: SPACING.md}}>
-    <Text style={{fontSize: FONT_SIZE.md, fontWeight: '600', marginBottom: SPACING.sm}}>Sign in as {role}</Text>
-    <TextInput placeholder="Phone number" keyboardType="phone-pad" style={styles.input}/>
-    <TextInput placeholder="Password (optional for testing)" secureTextEntry style={styles.input}/>
-    <TouchableOpacity style={[styles.btnPrimary]} onPress={onSubmit}>
-      <Text style={{color:COLORS.textOnPrimary}}>Continue</Text>
-    </TouchableOpacity>
-  </View>
-);
+const LoginForm = ({ role, onSubmit }: { role: 'PASSENGER'|'CAPTAIN'; onSubmit: () => void }) => {
+  const displayRole = role === 'PASSENGER' ? 'Passenger' : 'Captain';
+  return (
+    <View style={{paddingHorizontal: SPACING.lg, paddingTop: SPACING.md}}>
+      <Text style={{fontSize: FONT_SIZE.md, fontWeight: '600', marginBottom: SPACING.sm}}>Sign in as {displayRole}</Text>
+      <TextInput placeholder="Phone number" keyboardType="phone-pad" style={styles.input}/>
+      <TextInput placeholder="Password (optional for testing)" secureTextEntry style={styles.input}/>
+      <TouchableOpacity style={[styles.btnPrimary]} onPress={onSubmit}>
+        <Text style={{color:COLORS.textOnPrimary}}>Continue</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 export default function AuthScreen() {
   const router = useRouter();
   const [index, setIndex] = useState(0);
-  const routes = [{key:'rider',title:'Rider'}, {key:'driver', title:'Driver'}];
+  const routes = [{key:'passenger',title:'Passenger'}, {key:'captain', title:'Captain'}];
 
   const renderScene = SceneMap({
-    rider: () => <LoginForm role="rider" onSubmit={() => router.replace('/rider/home')} />,
-    driver: () => <LoginForm role="driver" onSubmit={() => router.replace('/driver/home')} />
+    passenger: () => <LoginForm role="PASSENGER" onSubmit={() => router.replace('/rider/home')} />,
+    captain: () => <LoginForm role="CAPTAIN" onSubmit={() => router.replace('/driver/home')} />
   });
 
   return (

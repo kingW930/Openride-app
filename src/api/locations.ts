@@ -1,6 +1,6 @@
 // src/api/locations.ts
 // Location API service for geocoding and meeting points
-import axiosInstance from './axiosInstance';
+import { pythonAxiosInstance } from './axiosInstance';
 import { NOMINATIM_BASE_URL, LOCATION_ENDPOINTS } from './endpoints';
 import { MeetingPoint, ApiResponse } from '../types/api';
 
@@ -127,7 +127,7 @@ export async function reverseGeocodeNominatim(
 // ===========================================
 
 /**
- * Search locations using backend API
+ * Search locations using backend API (Python search service)
  * Backend can use Google Places API or other providers
  */
 export async function searchLocationsAPI(
@@ -136,7 +136,7 @@ export async function searchLocationsAPI(
   lng?: number
 ): Promise<LocationSuggestion[]> {
   try {
-    const response = await axiosInstance.get<ApiResponse<{ results: LocationSuggestion[] }>>(
+    const response = await pythonAxiosInstance.get<ApiResponse<{ results: LocationSuggestion[] }>>(
       LOCATION_ENDPOINTS.SEARCH_LOCATIONS, 
       {
         params: { query, lat, lng },
@@ -151,14 +151,14 @@ export async function searchLocationsAPI(
 }
 
 /**
- * Reverse geocode using backend API
+ * Reverse geocode using backend API (Python search service)
  */
 export async function reverseGeocodeAPI(
   lat: number,
   lng: number
 ): Promise<ReverseGeocodeResult | null> {
   try {
-    const response = await axiosInstance.get<ApiResponse<ReverseGeocodeResult>>(
+    const response = await pythonAxiosInstance.get<ApiResponse<ReverseGeocodeResult>>(
       LOCATION_ENDPOINTS.REVERSE_GEOCODE, 
       {
         params: { lat, lng },
@@ -173,7 +173,7 @@ export async function reverseGeocodeAPI(
 }
 
 /**
- * Get meeting points from backend API
+ * Get meeting points from backend API (Python search service)
  * Backend finds optimal meeting points based on user location and destination
  */
 export async function getMeetingPointsAPI(
@@ -183,7 +183,7 @@ export async function getMeetingPointsAPI(
   destLng: number
 ): Promise<MeetingPoint[]> {
   try {
-    const response = await axiosInstance.get<ApiResponse<{ meetingPoints: MeetingPoint[] }>>(
+    const response = await pythonAxiosInstance.get<ApiResponse<{ meetingPoints: MeetingPoint[] }>>(
       LOCATION_ENDPOINTS.GET_MEETING_POINTS, 
       {
         params: {
@@ -203,14 +203,14 @@ export async function getMeetingPointsAPI(
 }
 
 /**
- * Get popular/frequently used locations
+ * Get popular/frequently used locations (Python search service)
  */
 export async function getPopularLocationsAPI(
   lat: number,
   lng: number
 ): Promise<LocationSuggestion[]> {
   try {
-    const response = await axiosInstance.get<ApiResponse<{ locations: LocationSuggestion[] }>>(
+    const response = await pythonAxiosInstance.get<ApiResponse<{ locations: LocationSuggestion[] }>>(
       LOCATION_ENDPOINTS.GET_POPULAR_LOCATIONS, 
       {
         params: { lat, lng },

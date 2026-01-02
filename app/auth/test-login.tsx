@@ -20,11 +20,12 @@ export default function TestLoginScreen() {
     // Save user to store in testing mode
     login({
       id: 'test-user-' + Date.now(),
-      name: name || 'Test User',
+      fullName: name || 'Test User',
       email: email || 'test@openride.com',
-      phone: '',
-      role: 'rider',
-      kycStatus: 'PENDING',
+      phone: '+234800000000',
+      role: 'PASSENGER',
+      kycStatus: 'UNVERIFIED',
+      isActive: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });

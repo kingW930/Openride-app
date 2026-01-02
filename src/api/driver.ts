@@ -1,4 +1,4 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance, { pythonAxiosInstance } from './axiosInstance';
 import { DRIVER_ENDPOINTS, ROUTE_ENDPOINTS, BOOKING_ENDPOINTS } from './endpoints';
 import { 
   ApiResponse, 
@@ -21,7 +21,7 @@ import {
 } from '../types/driver-api';
 
 // ===========================================
-// Route Management
+// Route Management (Python Backend)
 // ===========================================
 
 /**
@@ -31,7 +31,7 @@ export const createRoute = async (data: CreateRouteRequest): Promise<ApiResponse
   // Convert camelCase to snake_case for Python backend
   const snakeCaseData = convertRouteToSnakeCase(data);
   
-  const response = await axiosInstance.post<RouteResponsePython>(
+  const response = await pythonAxiosInstance.post<RouteResponsePython>(
     '/routes', // Python service uses /routes directly
     snakeCaseData
   );
@@ -49,7 +49,7 @@ export const createRoute = async (data: CreateRouteRequest): Promise<ApiResponse
  * Get driver's active routes (Python backend)
  */
 export const getDriverRoutes = async (): Promise<ApiResponse<{ routes: Route[] }>> => {
-  const response = await axiosInstance.get<RouteResponsePython[]>(
+  const response = await pythonAxiosInstance.get<RouteResponsePython[]>(
     '/routes' // Python service endpoint
   );
   
@@ -63,13 +63,13 @@ export const getDriverRoutes = async (): Promise<ApiResponse<{ routes: Route[] }
 };
 
 /**
- * Get route history
+ * Get route history (Python backend)
  */
 export const getRouteHistory = async (
   page: number = 1,
   limit: number = 20
 ): Promise<ApiResponse<PaginatedResponse<Route>>> => {
-  const response = await axiosInstance.get<ApiResponse<PaginatedResponse<Route>>>(
+  const response = await pythonAxiosInstance.get<ApiResponse<PaginatedResponse<Route>>>(
     ROUTE_ENDPOINTS.GET_DRIVER_ROUTE_HISTORY,
     { params: { page, limit } }
   );
@@ -77,23 +77,23 @@ export const getRouteHistory = async (
 };
 
 /**
- * Delete/Cancel a route
+ * Delete/Cancel a route (Python backend)
  */
 export const deleteRoute = async (routeId: string): Promise<ApiResponse<{ success: boolean }>> => {
   const url = ROUTE_ENDPOINTS.DELETE_ROUTE.replace(':id', routeId);
-  const response = await axiosInstance.delete<ApiResponse<{ success: boolean }>>(url);
+  const response = await pythonAxiosInstance.delete<ApiResponse<{ success: boolean }>>(url);
   return response.data;
 };
 
 // ===========================================
-// Driver Status & Location
+// Driver Status & Location (Python Fleet Service)
 // ===========================================
 
 /**
- * Set online/offline status
+ * Set online/offline status (Python backend)
  */
 export const setOnlineStatus = async (isOnline: boolean): Promise<ApiResponse<{ status: string }>> => {
-  const response = await axiosInstance.post<ApiResponse<{ status: string }>>(
+  const response = await pythonAxiosInstance.post<ApiResponse<{ status: string }>>(
     DRIVER_ENDPOINTS.SET_STATUS,
     { isOnline }
   );
@@ -101,7 +101,7 @@ export const setOnlineStatus = async (isOnline: boolean): Promise<ApiResponse<{ 
 };
 
 /**
- * Update driver location (when online but not in trip)
+ * Update driver location (Python backend)
  */
 export const updateDriverLocation = async (
   lat: number, 
@@ -109,7 +109,7 @@ export const updateDriverLocation = async (
   heading: number, 
   speed: number
 ): Promise<ApiResponse<{ success: boolean }>> => {
-  const response = await axiosInstance.post<ApiResponse<{ success: boolean }>>(
+  const response = await pythonAxiosInstance.post<ApiResponse<{ success: boolean }>>(
     DRIVER_ENDPOINTS.UPDATE_LOCATION,
     { lat, lng, heading, speed }
   );
@@ -117,14 +117,14 @@ export const updateDriverLocation = async (
 };
 
 /**
- * Set destination for matchmaking
+ * Set destination for matchmaking (Python backend)
  */
 export const setDestination = async (
   lat: number, 
   lng: number, 
   address: string
 ): Promise<ApiResponse<{ destination: any; matchingRiders: number }>> => {
-  const response = await axiosInstance.post<ApiResponse<{ destination: any; matchingRiders: number }>>(
+  const response = await pythonAxiosInstance.post<ApiResponse<{ destination: any; matchingRiders: number }>>(
     DRIVER_ENDPOINTS.SET_DESTINATION,
     { lat, lng, address }
   );
@@ -132,10 +132,10 @@ export const setDestination = async (
 };
 
 /**
- * Clear destination
+ * Clear destination (Python backend)
  */
 export const clearDestination = async (): Promise<ApiResponse<{ success: boolean }>> => {
-  const response = await axiosInstance.delete<ApiResponse<{ success: boolean }>>(
+  const response = await pythonAxiosInstance.delete<ApiResponse<{ success: boolean }>>(
     DRIVER_ENDPOINTS.CLEAR_DESTINATION
   );
   return response.data;

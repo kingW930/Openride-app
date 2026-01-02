@@ -1,4 +1,4 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance, { pythonAxiosInstance } from './axiosInstance';
 import { 
   ROUTE_ENDPOINTS, 
   BOOKING_ENDPOINTS, 
@@ -15,7 +15,7 @@ import {
 } from '../types/api';
 
 /**
- * Search for routes (Simple)
+ * Search for routes (Simple) - Python service
  */
 export const searchRoutes = async (params: {
   lat: number;
@@ -24,7 +24,7 @@ export const searchRoutes = async (params: {
   destLng?: number;
   date?: string;
 }): Promise<ApiResponse<{ routes: RouteSummary[] }>> => {
-  const response = await axiosInstance.get<ApiResponse<{ routes: RouteSummary[] }>>(
+  const response = await pythonAxiosInstance.get<ApiResponse<{ routes: RouteSummary[] }>>(
     ROUTE_ENDPOINTS.SEARCH_ROUTES, 
     { params }
   );
@@ -32,7 +32,7 @@ export const searchRoutes = async (params: {
 };
 
 /**
- * Advanced Search
+ * Advanced Search - Python service
  */
 export const advancedSearch = async (data: {
   origin: Coordinates;
@@ -44,7 +44,7 @@ export const advancedSearch = async (data: {
     vehicleType?: string[];
   };
 }): Promise<ApiResponse<{ routes: RouteSummary[] }>> => {
-  const response = await axiosInstance.post<ApiResponse<{ routes: RouteSummary[] }>>(
+  const response = await pythonAxiosInstance.post<ApiResponse<{ routes: RouteSummary[] }>>(
     SEARCH_ENDPOINTS.ADVANCED_SEARCH,
     data
   );
@@ -106,7 +106,7 @@ export const cancelBooking = async (
 };
 
 /**
- * Rate a trip
+ * Rate a trip - Python fleet service
  */
 export const rateTrip = async (
   tripId: string, 
@@ -115,7 +115,7 @@ export const rateTrip = async (
   badges?: string[]
 ): Promise<ApiResponse<{ success: boolean }>> => {
   const url = TRIP_ENDPOINTS.RATE_TRIP.replace(':id', tripId);
-  const response = await axiosInstance.post<ApiResponse<{ success: boolean }>>(
+  const response = await pythonAxiosInstance.post<ApiResponse<{ success: boolean }>>(
     url, 
     { rating, comment, badges }
   );
